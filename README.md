@@ -1,7 +1,6 @@
-
 # A Social Network with React
 
-This project was built as the final project of internet engineering course in guilan university by Pouria pour Bagheri and Mahdi Pourtalebi
+This project was built as the final project of internet engineering course in guilan university by Pourya Pourbagheri and Mahdi Pourtalebi
 
 todo:rest of the readme
 

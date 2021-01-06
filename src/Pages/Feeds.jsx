@@ -2,6 +2,7 @@ import React from "react";
 import { Container } from "@material-ui/core";
 
 import Post from "../Components/Post";
+import Compose from "../Components/Compose";
 
 const posts = [
   {
@@ -41,7 +42,12 @@ const Feeds = () => {
     );
   });
 
-  return <Container maxWidth="sm">{cards}</Container>;
+  return (
+    <Container maxWidth="sm">
+      <Compose />
+      {cards}
+    </Container>
+  );
 };
 
 export default Feeds;

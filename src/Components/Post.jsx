@@ -56,12 +56,12 @@ const Post = ({
       <Divider />
       {media && <CardMedia component={mediaType} controls src={media} />}
       <CardContent>
-        <Typography variant="body2" color="textSecondary" component="p">
+        <Typography variant="body2" component="p">
           {caption}
         </Typography>
       </CardContent>
       <CardActions disableSpacing>
-        <IconButton aria-label="add to favorites">
+        <IconButton aria-label="Like">
           <FavoriteIcon />
         </IconButton>
         <IconButton aria-label="share">

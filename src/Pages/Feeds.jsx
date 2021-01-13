@@ -15,6 +15,7 @@ const posts = [
     caption: `This impressive paella is a perfect party dish and a fun meal to cook
           together with your guests. Add 1 cup of frozen peas along with the
           mussels, if you like.`,
+    liked: true,
   },
   {
     id: 2,
@@ -24,6 +25,17 @@ const posts = [
     media: null,
     mediaType: null,
     caption: `what's up mfs?!`,
+    liked: false,
+  },
+  {
+    id: 3,
+    avatarImage: null,
+    authorName: "Dutch Van Der Linde",
+    postDate: "September 18, 2018",
+    media: null,
+    mediaType: null,
+    caption: `John, you're my son!`,
+    liked: false,
   },
 ];
 
@@ -38,6 +50,7 @@ const Feeds = () => {
         media={post.media}
         mediaType={post.mediaType}
         caption={post.caption}
+        liked={post.liked}
       />
     );
   });

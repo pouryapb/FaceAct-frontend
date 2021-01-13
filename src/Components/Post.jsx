@@ -34,6 +34,7 @@ const Post = ({
   media,
   mediaType,
   caption,
+  liked,
 }) => {
   const classes = useStyles();
 
@@ -62,7 +63,7 @@ const Post = ({
       </CardContent>
       <CardActions disableSpacing>
         <IconButton aria-label="Like">
-          <FavoriteIcon />
+          <FavoriteIcon style={{ color: liked && red[600] }} />
         </IconButton>
         <IconButton aria-label="share">
           <ShareIcon />

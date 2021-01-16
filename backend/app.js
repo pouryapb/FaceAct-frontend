@@ -1,7 +1,6 @@
 const express = require("express");
 const app = express();
 const morgan = require("morgan");
-const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 
 const usersRoute = require("./api/routes/users");
@@ -22,23 +21,24 @@ mongoose.connect(
 mongoose.Promise = global.Promise;
 
 app.use(morgan("dev"));
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
 
 // CORS handling
 app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header(
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader(
     "Access-Control-Allow-Headers",
     "Origin, X-Requested_With, Content-Type, Accept, Authorization"
   );
   if (req.method === "OPTIONS") {
-    res.header("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE");
     return res.status(200).json({});
   }
-
   next();
 });
+
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
+app.use("/uploads/", express.static("uploads"));
 
 // Routes handling
 app.use("/", usersRoute);

@@ -1,20 +1,24 @@
-import React from "react";
+import React, { useContext, useState } from "react";
 import {
   Avatar,
   Button,
   CssBaseline,
   TextField,
-  FormControlLabel,
-  Checkbox,
+  //FormControlLabel,
+  //Checkbox,
   Link,
   Grid,
   Box,
   Typography,
   makeStyles,
   Container,
+  Snackbar,
 } from "@material-ui/core";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import { Link as RouterLink } from "react-router-dom";
+import { Alert } from "@material-ui/lab";
+
+import { AuthContext } from "../Context/auth-context";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -52,8 +56,80 @@ const Copyright = () => {
 const SignIn = () => {
   const classes = useStyles();
 
+  const [username, setUsrname] = useState("");
+  const [password, setPassword] = useState("");
+  const [snackOpen, setOpen] = useState(false);
+  const [severity, setSeverity] = useState("");
+  const [alertMsg, setAlertMsg] = useState("");
+
+  const { login } = useContext(AuthContext);
+
+  const submitHandler = (event) => {
+    event.preventDefault();
+    if (username === "" || password === "") {
+      setSeverity("warning");
+      setAlertMsg("Please fill the required fields.");
+      setOpen(true);
+      return;
+    }
+
+    const requestBody = {
+      username: username,
+      password: password,
+    };
+
+    fetch("http://localhost:8000/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestBody),
+    })
+      .then((res) => {
+        if (!(res.status === 200 || res.status === 201)) {
+          setSeverity("error");
+          setAlertMsg("Auth failed!");
+          setOpen(true);
+          throw new Error("failed!");
+        }
+        return res.json();
+      })
+      .then((resBody) => {
+        setSeverity("success");
+        setAlertMsg("User successfuly created.");
+        setOpen(true);
+        login(resBody.token);
+        // and something else that I cant think of right now...
+      })
+      .catch((err) => {
+        setSeverity("error");
+        setAlertMsg("Auth failed!");
+        setOpen(true);
+        console.log(err);
+      });
+  };
+
+  const snackClose = () => {
+    setOpen(false);
+  };
+
   return (
     <Container component="main" maxWidth="xs">
+      <Snackbar
+        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+        open={snackOpen}
+        autoHideDuration={3000}
+        onClose={snackClose}
+      >
+        <Alert
+          elevation={6}
+          variant="filled"
+          onClose={snackClose}
+          severity={severity}
+        >
+          {alertMsg}
+        </Alert>
+      </Snackbar>
       <CssBaseline />
       <div className={classes.paper}>
         <Avatar className={classes.avatar}>
@@ -62,7 +138,7 @@ const SignIn = () => {
         <Typography component="h1" variant="h5">
           Sign in
         </Typography>
-        <form className={classes.form} noValidate>
+        <form className={classes.form} noValidate onSubmit={submitHandler}>
           <TextField
             variant="outlined"
             margin="normal"
@@ -73,6 +149,10 @@ const SignIn = () => {
             name="username"
             autoComplete="username"
             autoFocus
+            value={username}
+            onChange={(event) => {
+              setUsrname(event.target.value);
+            }}
           />
           <TextField
             variant="outlined"
@@ -84,11 +164,15 @@ const SignIn = () => {
             type="password"
             id="password"
             autoComplete="current-password"
+            value={password}
+            onChange={(event) => {
+              setPassword(event.target.value);
+            }}
           />
-          <FormControlLabel
+          {/* <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}
             label="Remember me"
-          />
+          /> */}
           <Button
             type="submit"
             fullWidth

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Avatar,
   Button,
@@ -12,9 +12,11 @@ import {
   Typography,
   makeStyles,
   Container,
+  Snackbar,
 } from "@material-ui/core";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import { Link as RouterLink } from "react-router-dom";
+import { Alert } from "@material-ui/lab";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -51,8 +53,88 @@ const Copyright = () => {
 const SignUp = () => {
   const classes = useStyles();
 
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [username, setUsrname] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [snackOpen, setOpen] = useState(false);
+  const [severity, setSeverity] = useState("");
+  const [alertMsg, setAlertMsg] = useState("");
+
+  const snackClose = () => {
+    setOpen(false);
+  };
+
+  const submitHandler = (event) => {
+    event.preventDefault();
+    if (
+      firstName === "" ||
+      lastName === "" ||
+      username === "" ||
+      email === "" ||
+      password === ""
+    ) {
+      setSeverity("warning");
+      setAlertMsg("Please fill the required fields.");
+      setOpen(true);
+      return;
+    }
+
+    const requestBody = {
+      username: username,
+      firstName: firstName,
+      lastName: lastName,
+      email: email,
+      password: password,
+    };
+
+    fetch("http://localhost:8000/signup", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestBody),
+    })
+      .then((res) => {
+        if (!(res.status === 200 || res.status === 201)) {
+          setSeverity("error");
+          setAlertMsg("Sign up failed! User exists.");
+          setOpen(true);
+          throw new Error("failed!");
+        }
+        return res.json();
+      })
+      .then((resBody) => {
+        setSeverity("success");
+        setAlertMsg("User successfuly created.");
+        setOpen(true);
+      })
+      .catch((err) => {
+        setSeverity("error");
+        setAlertMsg("Sign up failed! User exists.");
+        setOpen(true);
+        console.log(err);
+      });
+  };
+
   return (
     <Container component="main" maxWidth="xs">
+      <Snackbar
+        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+        open={snackOpen}
+        autoHideDuration={3000}
+        onClose={snackClose}
+      >
+        <Alert
+          elevation={6}
+          variant="filled"
+          onClose={snackClose}
+          severity={severity}
+        >
+          {alertMsg}
+        </Alert>
+      </Snackbar>
       <CssBaseline />
       <div className={classes.paper}>
         <Avatar className={classes.avatar}>
@@ -61,7 +143,7 @@ const SignUp = () => {
         <Typography component="h1" variant="h5">
           Sign up
         </Typography>
-        <form className={classes.form} noValidate>
+        <form className={classes.form} noValidate onSubmit={submitHandler}>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
               <TextField
@@ -73,6 +155,10 @@ const SignUp = () => {
                 id="firstName"
                 label="First Name"
                 autoFocus
+                value={firstName}
+                onChange={(event) => {
+                  setFirstName(event.target.value);
+                }}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -84,6 +170,10 @@ const SignUp = () => {
                 label="Last Name"
                 name="lastName"
                 autoComplete="lname"
+                value={lastName}
+                onChange={(event) => {
+                  setLastName(event.target.value);
+                }}
               />
             </Grid>
             <Grid item xs={12}>
@@ -95,6 +185,10 @@ const SignUp = () => {
                 label="Username"
                 name="username"
                 autoComplete="username"
+                value={username}
+                onChange={(event) => {
+                  setUsrname(event.target.value);
+                }}
               />
             </Grid>
             <Grid item xs={12}>
@@ -106,6 +200,10 @@ const SignUp = () => {
                 label="Email Address"
                 name="email"
                 autoComplete="email"
+                value={email}
+                onChange={(event) => {
+                  setEmail(event.target.value);
+                }}
               />
             </Grid>
             <Grid item xs={12}>
@@ -118,6 +216,10 @@ const SignUp = () => {
                 type="password"
                 id="password"
                 autoComplete="current-password"
+                value={password}
+                onChange={(event) => {
+                  setPassword(event.target.value);
+                }}
               />
             </Grid>
             {/* <Grid item xs={12}>

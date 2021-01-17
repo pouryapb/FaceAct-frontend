@@ -36,7 +36,7 @@ const Settings = () => {
   const [email, setEmail] = useState("");
   const [file, setFile] = useState(null);
 
-  const { token, userId } = useContext(AuthContext);
+  const { token, userId, logout } = useContext(AuthContext);
 
   const firstLoad = () => {
     fetch("http://localhost:8000/uinfo/" + userId, {
@@ -195,13 +195,21 @@ const Settings = () => {
           </CardContent>
           <Box
             display="flex"
-            flexDirection="column"
+            flexDirection="row"
             justifyContent="center"
             alignItems="center"
             marginBottom="1rem"
           >
             <Button color="primary" variant="outlined" onClick={updateInfo}>
               save profile
+            </Button>
+            <Button
+              style={{ marginLeft: "0.5rem" }}
+              color="default"
+              variant="outlined"
+              onClick={logout}
+            >
+              Logout
             </Button>
           </Box>
         </form>

@@ -98,8 +98,7 @@ const SignIn = () => {
         setSeverity("success");
         setAlertMsg("User successfuly created.");
         setOpen(true);
-        login(resBody.token);
-        // and something else that I cant think of right now...
+        login(resBody.token, username);
       })
       .catch((err) => {
         setSeverity("error");
@@ -144,7 +143,7 @@ const SignIn = () => {
             margin="normal"
             required
             fullWidth
-            id="usename"
+            id="useename"
             label="Username"
             name="username"
             autoComplete="username"

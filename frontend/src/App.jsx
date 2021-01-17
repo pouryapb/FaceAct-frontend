@@ -5,6 +5,7 @@ import SignIn from "./Pages/SignIn";
 import SignUp from "./Pages/SignUp";
 import Feeds from "./Pages/Feeds";
 import Profile from "./Pages/Profile";
+import Settings from "./Pages/Settings";
 
 import { AuthContext } from "./Context/auth-context";
 
@@ -20,6 +21,7 @@ const App = () => {
         {!token && <Route path="/signup" component={SignUp} />}
         {token && <Route path="/feeds" component={Feeds} />}
         {token && <Route path="/profile" component={Profile} />}
+        <Route path="/settings" component={Settings} />
       </Switch>
     </BrowserRouter>
   );

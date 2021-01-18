@@ -43,6 +43,11 @@ router.get("/feed", checkAuth, (req, res, next) => {
             .exec()
             .then((friendposts) => {
               friendposts.map((singlepost) => {
+                var innerObj = {};
+      innerObj[prop] = obj[prop];
+                singlepost["name"]= user[0].firstName+" "+user[0].lastName;
+                singlepost["avatar"]= user[0].avatar;
+                console.log(singlepost);
                 posts.push(singlepost);
               });
             });

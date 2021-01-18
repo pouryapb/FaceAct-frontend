@@ -98,7 +98,7 @@ const SignIn = () => {
         setSeverity("success");
         setAlertMsg("User successfuly created.");
         setOpen(true);
-        login(resBody.token, username);
+        login(resBody.token, username, resBody.requests, resBody.followings);
       })
       .catch((err) => {
         setSeverity("error");

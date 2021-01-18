@@ -4,6 +4,9 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const multer = require("multer");
 
+const checkAuth = require("../middleware/check-auth");
+const User = require("../models/user");
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "./uploads");
@@ -29,10 +32,6 @@ const upload = multer({
   },
   fileFilter: fileFilter,
 });
-
-const checkAuth = require("../middleware/check-auth");
-
-const User = require("../models/user");
 
 router.post("/signup", (req, res, next) => {
   User.find({ username: req.body.username })
@@ -104,6 +103,8 @@ router.post("/login", (req, res, next) => {
           return res.status(200).json({
             message: "auth successful",
             token: token,
+            requests: user[0].requests,
+            followings: user[0].followings,
           });
         }
         res.status(401).json({
@@ -131,9 +132,7 @@ router.get("/:username", (req, res, next) => {
           message: "user not found",
         });
       }
-      res.status(200).json({
-        userInfo: user[0],
-      });
+      res.status(200).json(user[0]);
     })
     .catch((err) => {
       console.log(err);
@@ -175,7 +174,7 @@ router.patch("/uinfo/:username", checkAuth, (req, res, next) => {
   for (const ops of req.body) {
     updateOps[ops.propName] = ops.value;
   }
-  User.update({ username: username }, { $set: updateOps })
+  User.updateOne({ username: username }, { $set: updateOps })
     .exec()
     .then((result) => {
       res.status(201).json(result);
@@ -198,7 +197,7 @@ router.patch(
         message: "auth failed",
       });
     }
-    User.update({ username: username }, { $set: { avatar: req.file.path } })
+    User.updateOne({ username: username }, { $set: { avatar: req.file.path } })
       .exec()
       .then((result) => {
         res.status(201).json(result);
@@ -229,7 +228,7 @@ router.post("/req/:username", checkAuth, (req, res, next) => {
 router.post("/reqac/:username", checkAuth, (req, res, next) => {
   const reciver = req.params.username;
   const sender = req.userData.username;
-  User.update(
+  User.updateOne(
     { username: sender },
     { $pull: { requests: reciver }, $push: { followers: reciver } }
   )
@@ -249,7 +248,7 @@ router.post("/reqac/:username", checkAuth, (req, res, next) => {
 router.post("/reqden/:username", checkAuth, (req, res, next) => {
   const reciver = req.params.username;
   const sender = req.userData.username;
-  User.update({ username: sender }, { $pull: { requests: reciver } })
+  User.updateOne({ username: sender }, { $pull: { requests: reciver } })
     .exec()
     .then((user) => {
       res.status(201).json({

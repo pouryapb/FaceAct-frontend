@@ -32,38 +32,24 @@ const upload = multer({
   fileFilter: fileFilter,
 });
 
-router.get("/feed", checkAuth, (req, res, next) => {
+router.get("/feed", checkAuth, async (req, res, next) => {
   let posts = [];
-  User.find({ username: req.userData.username })
-    .exec()
-    .then((user) => {
-      if (user[0].followings.length > 0) {
-        user[0].followings.map((userid) => {
-          Post.find({ username: userid })
-            .exec()
-            .then((friendposts) => {
-              friendposts.map((singlepost) => {
-                posts.push({
-                  "post":singlepost,
-                  "name":user[0].firstName+" "+user[0].lastName,
-                  "avatar":user[0].avatar,
-                });
-              });
-            });
-        });
-        posts.sort(function (a, b) {
-          return a[date] < b[date];
-        });
-        res.status(200).json(posts);
-      }else{
-        res.status(500).json(posts);
-      }
-    })
-    .catch((err) => {
-      res.status(500).json({
-        error: err,
+  var user = await User.find({ username: req.userData.username })
+  console.log(user)
+  for (let i = 0; i < user[0].followings.length; i++) {
+    const element = user[0].followings[i];
+    var data = await Post.find({ username: element });
+    var poster = await User.find({ username: element})
+    for (let j = 0; j < data.length; j++) {
+      const element = data[j];
+      posts.push({
+        "post":element,
+        "name":poster[0].firstName+" "+poster[0].lastName,
+        "avatar":poster[0].avatar,
       });
-    });
+    }
+  }
+  res.status(200).json(posts);
 });
 
 router.get("/userposts/:username", checkAuth, (req, res, next) => {

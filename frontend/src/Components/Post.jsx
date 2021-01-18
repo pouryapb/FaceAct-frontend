@@ -43,7 +43,7 @@ const Post = ({
       <CardHeader
         avatar={
           <Avatar alt={authorName} src={avatarImage} className={classes.avatar}>
-            {authorName[0]}
+            {authorName}
           </Avatar>
         }
         action={
@@ -55,7 +55,7 @@ const Post = ({
         subheader={postDate}
       />
       <Divider />
-      {media && <CardMedia component={mediaType} controls src={media} />}
+      {mediaType && <CardMedia component={mediaType} controls src={media} />}
       <CardContent>
         <Typography variant="body2" component="p">
           {caption}

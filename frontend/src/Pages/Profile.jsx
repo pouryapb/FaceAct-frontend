@@ -92,6 +92,26 @@ const Profile = ({ match }) => {
       updateUser();
     }
 
+    fetch("http://localhost:8000/posts/userposts/" + userId, {
+      method: "GET",
+      headers: {
+        Authorization: "Bearer " + token,
+      },
+    })
+      .then((res) => {
+        if (!(res.status === 200 || res.status === 201 || res.status === 304)) {
+          throw new Error("failed!");
+        }
+        return res.json();
+      })
+      .then((resBody) => {
+        console.log(resBody);
+        setPosts(resBody);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+
     fetch(
       "http://localhost:8000/" +
         (match ? match.params.username : "uinfo/" + userId),
@@ -113,7 +133,6 @@ const Profile = ({ match }) => {
           resBody.avatar ? "http://localhost:8000/" + resBody.avatar : null
         );
         setName(resBody.firstName + " " + resBody.lastName);
-        setPosts(resBody.posts);
         setFollowers(resBody.followers);
         setFollowing(resBody.followings);
       })
@@ -159,6 +178,10 @@ const Profile = ({ match }) => {
           throw new Error("failed!");
         }
       })
+      .then((resBody) => {
+        setFollowers(resBody.followers);
+        setFollowing(resBody.followings);
+      })
       .catch((err) => {
         console.log(err);
       });
@@ -189,14 +212,14 @@ const Profile = ({ match }) => {
   const listOfPosts = posts.map((post) => {
     return (
       <Post
-        key={post.id}
-        avatarImage={post.avatarImage}
-        authorName={post.authorName}
-        postDate={post.postDate}
-        media={post.media}
-        mediaType={post.mediaType}
-        caption={post.caption}
-        liked={post.liked}
+        key={post._id}
+        avatarImage={avatar}
+        authorName={name}
+        postDate={post.date}
+        media={"http://localhost:8000/" + post.media}
+        mediaType={post.mediatype === "image" ? "img" : post.mediatype}
+        caption={post.text}
+        liked={post.likes.includes(userId) ? true : false}
       />
     );
   });

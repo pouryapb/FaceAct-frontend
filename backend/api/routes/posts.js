@@ -50,8 +50,24 @@ router.get("/feed", checkAuth, (req, res, next) => {
         posts.sort(function (a, b) {
           return a[date] < b[date];
         });
-        res.statusCode(200).json(posts);
+        res.status(200).json(posts);
       }
+    })
+    .catch((err) => {
+      res.status(500).json({
+        error: err,
+      });
+    });
+});
+
+router.get("/userposts/:username", checkAuth, (req, res, next) => {
+  Post.find({ username: req.params.username })
+    .exec()
+    .then((posts) => {
+      posts.sort((a, b) => {
+        return a.date < b.date;
+      });
+      res.status(200).json(posts);
     })
     .catch((err) => {
       res.status(500).json({
@@ -71,6 +87,11 @@ router.get("/:postid", (req, res, next) => {
       } else {
         res.status(500).json({});
       }
+    })
+    .catch((err) => {
+      res.status(500).json({
+        error: err,
+      });
     });
 });
 router.post("/", checkAuth, upload.single("postmedia"), (req, res, next) => {
@@ -83,10 +104,13 @@ router.post("/", checkAuth, upload.single("postmedia"), (req, res, next) => {
   });
   post
     .save()
-    .then( (result) =>{
+    .then((result) => {
       console.log(result);
       console.log(result._id);
-      User.updateOne({ username: req.userData.username }, { $push: { posts: result._id } } ).exec();
+      User.updateOne(
+        { username: req.userData.username },
+        { $push: { posts: result._id } }
+      ).exec();
       res.status(200).json({
         message: "posted",
       });
@@ -99,22 +123,11 @@ router.post("/", checkAuth, upload.single("postmedia"), (req, res, next) => {
     });
 });
 
-router.get("/posts/:username", checkAuth, (req, res, next) => {
-  Post.find({ username: req.body.username })
-    .exec()
-    .then((posts) => {
-      posts.sort(function (a, b) {
-        return a[date] < b[date];
-      });
-      res.statusCode(200).json(posts);
-    });
-});
-
 router.delete("/", checkAuth, (req, res, next) => {
   Post.deleteOne({ id: req.body.postid, username: req.userData.username })
     .exec()
     .then((result) => {
-      res.statusCode(200).json({});
+      res.status(200).json({});
     })
     .catch((err) => {
       console.log(err);

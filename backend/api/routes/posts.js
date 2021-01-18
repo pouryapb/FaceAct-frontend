@@ -43,12 +43,11 @@ router.get("/feed", checkAuth, (req, res, next) => {
             .exec()
             .then((friendposts) => {
               friendposts.map((singlepost) => {
-                var innerObj = {};
-      innerObj[prop] = obj[prop];
-                singlepost["name"]= user[0].firstName+" "+user[0].lastName;
-                singlepost["avatar"]= user[0].avatar;
-                console.log(singlepost);
-                posts.push(singlepost);
+                posts.push({
+                  "post":singlepost,
+                  "name":user[0].firstName+" "+user[0].lastName,
+                  "avatar":user[0].avatar,
+                });
               });
             });
         });
@@ -56,6 +55,8 @@ router.get("/feed", checkAuth, (req, res, next) => {
           return a[date] < b[date];
         });
         res.status(200).json(posts);
+      }else{
+        res.status(500).json(posts);
       }
     })
     .catch((err) => {

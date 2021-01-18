@@ -47,12 +47,22 @@ router.get("/:postid", (req, res, next) => {
 });
 
 router.post("/", checkAuth, upload.single("postmedia"), (req, res, next) => {
-  const post = new Post({
-    username : req.body.username,
-    text : req.body.text,
-    media : req.file.path,
-    mediatype: req.file.mimetype.split("/")[0],
-  });
+  const post;
+  if(req.file){
+    post = new Post({
+      username : req.body.username,
+      text : req.body.text,
+      media : req.file.path,
+      mediatype: req.file.mimetype.split("/")[0],
+    });
+  }else{
+    post = new Post({
+      username : req.body.username,
+      text : req.body.text,
+      media : "",
+      mediatype: "null",
+    });
+  }
   post
     .save()
     .then((result) => {

@@ -213,7 +213,7 @@ router.patch(
 router.post("/req/:username", checkAuth, (req, res, next) => {
   const reciver = req.params.username;
   const sender = req.userData.username;
-  User.update({ username: reciver }, { $push: { requests: sender } })
+  User.updateOne({ username: reciver }, { $push: { requests: sender } })
     .exec()
     .then((result) => {
       res.status(201).json(result);

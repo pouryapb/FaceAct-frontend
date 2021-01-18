@@ -70,9 +70,8 @@ router.post("/", checkAuth, upload.single("postmedia"), (req, res, next) => {
 });
 
 router.get(
-  "/feed/",
+  "/feed",
   checkAuth,
-  upload.single("postmedia"),
   (req, res, next) => {
     const posts = {};
     User.find({ username: req.body.username })
@@ -91,13 +90,23 @@ router.get(
           posts.sort(function (a, b) {
             return a[date] < b[date];
           });
-          res.statusCode(200).json({
-            posts,
-          });
+          res.statusCode(200).json(posts);
         }
       });
   }
 );
+
+router.get(
+  "/posts/:username", checkAuth, (req, res, next) => {
+    Post.find({ username: req.body.username })
+      .exec()
+      .then((posts) => {
+        posts.sort(function (a, b) {
+          return a[date] < b[date];
+        });
+        res.statusCode(200).json(posts);
+  });
+});
 
 router.delete("/", checkAuth, (req, res, next) => {
   Post.deleteOne({ id: req.body.postid, username: req.userData.username })

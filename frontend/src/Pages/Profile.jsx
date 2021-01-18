@@ -5,15 +5,14 @@ import {
   CardHeader,
   CardContent,
   Avatar,
-  IconButton,
   Typography,
   Divider,
   Container,
   Grid,
   Link,
   Box,
+  Button,
 } from "@material-ui/core";
-import { MoreVert as MoreVertIcon } from "@material-ui/icons";
 
 import Post from "../Components/Post";
 import { AuthContext } from "../Context/auth-context";
@@ -35,53 +34,74 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-// const userInfo = {
-//   avatar: null,
-//   userId: "johnny",
-//   name: "John Smith",
-//   posts: [
-//     {
-//       id: 2,
-//       avatarImage: null,
-//       authorName: "John Smith",
-//       postDate: "September 18, 2018",
-//       media: null,
-//       mediaType: null,
-//       caption: `what's up mfs?!`,
-//       liked: true,
-//     },
-//     {
-//       id: 3,
-//       avatarImage: null,
-//       authorName: "John Smith",
-//       postDate: "September 18, 2018",
-//       media: null,
-//       mediaType: null,
-//       caption: `John, you're my son!`,
-//       liked: false,
-//     },
-//   ],
-//   followers: 100,
-//   following: 200,
-// };
-
-const Profile = () => {
+const Profile = ({ match }) => {
   const classes = useStyles();
 
-  const { token, userId } = useContext(AuthContext);
+  const {
+    token,
+    userId,
+    requests,
+    followings,
+    setRequests,
+    setFollowings,
+  } = useContext(AuthContext);
+
   const [avatar, setAvatar] = useState(null);
   const [name, setName] = useState("");
   const [posts, setPosts] = useState([]);
   const [followers, setFollowers] = useState([]);
   const [following, setFollowing] = useState([]);
+  const [followingState, setFollowingState] = useState("Follow");
 
-  const firstLoad = () => {
+  const updateUser = () => {
     fetch("http://localhost:8000/uinfo/" + userId, {
       method: "GET",
       headers: {
         Authorization: "Bearer " + token,
       },
     })
+      .then((res) => {
+        if (!(res.status === 200 || res.status === 201 || res.status === 304)) {
+          throw new Error("failed!");
+        }
+        return res.json();
+      })
+      .then((resBody) => {
+        setRequests(resBody.requests);
+        setFollowings(resBody.followings);
+
+        if (match) {
+          const id = match.params.username;
+
+          if (!requests.includes(id) && !followings.includes(id)) {
+            setFollowingState("Follow");
+          } else if (!requests.includes(id) && followings.includes(id)) {
+            setFollowingState("Unfollow");
+          } else if (requests.includes(id) && !followings.includes(id)) {
+            setFollowingState("Request sent");
+          }
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const firstLoad = () => {
+    if (token) {
+      updateUser();
+    }
+
+    fetch(
+      "http://localhost:8000/" +
+        (match ? match.params.username : "uinfo/" + userId),
+      {
+        method: "GET",
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      }
+    )
       .then((res) => {
         if (!(res.status === 200 || res.status === 201 || res.status === 304)) {
           throw new Error("failed!");
@@ -106,6 +126,66 @@ const Profile = () => {
     firstLoad();
   }
 
+  const req = () => {
+    const id = match.params.username;
+    fetch("http://localhost:8000/req/" + id, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+    })
+      .then((res) => {
+        if (!(res.status === 200 || res.status === 201)) {
+          throw new Error("failed!");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const updateInfo = (requestBody) => {
+    fetch("http://localhost:8000/uinfo/" + userId, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+      body: JSON.stringify(requestBody),
+    })
+      .then((res) => {
+        if (!(res.status === 200 || res.status === 201)) {
+          throw new Error("failed!");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const followHandle = () => {
+    const id = match.params.username;
+
+    if (followingState === "Unfollow") {
+      setFollowingState("Follow");
+      const requestBody = [
+        {
+          propName: "followings",
+          value: followings.filter((value, index, arr) => {
+            return value !== id;
+          }),
+        },
+      ];
+      updateInfo(requestBody);
+      updateUser();
+    } else if (followingState === "Follow") {
+      setFollowingState("Request sent");
+      req();
+      updateInfo();
+    }
+  };
+
   const listOfPosts = posts.map((post) => {
     return (
       <Post
@@ -124,15 +204,7 @@ const Profile = () => {
   return (
     <Container maxWidth="sm">
       <Card className={classes.root}>
-        <CardHeader
-          action={
-            <IconButton aria-label="settings">
-              <MoreVertIcon />
-            </IconButton>
-          }
-          title={userId}
-          subheader={name}
-        />
+        <CardHeader title={userId} subheader={name} />
         <CardContent>
           <Grid container alignItems="center" spacing={2}>
             <Grid className={classes.gridItem} item xs={3}>
@@ -182,6 +254,18 @@ const Profile = () => {
               <Typography variant="subtitle2">{following.length}</Typography>
             </Grid>
           </Grid>
+          {match && token && (
+            <Button
+              style={{ marginTop: "1rem" }}
+              color="primary"
+              fullWidth
+              variant="outlined"
+              disabled={followingState === "Request sent" ? true : false}
+              onClick={followHandle}
+            >
+              {followingState}
+            </Button>
+          )}
         </CardContent>
       </Card>
       <Divider />

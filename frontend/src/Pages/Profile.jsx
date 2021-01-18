@@ -283,7 +283,7 @@ const Profile = ({ match }) => {
               <Typography variant="subtitle2">{following.length}</Typography>
             </Grid>
           </Grid>
-          {match && token && (
+          {match && token && match.params.username !== userId && (
             <Button
               style={{ marginTop: "1rem" }}
               color="primary"

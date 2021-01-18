@@ -34,18 +34,17 @@ const upload = multer({
 
 router.get("/feed", checkAuth, async (req, res, next) => {
   let posts = [];
-  var user = await User.find({ username: req.userData.username })
-  console.log(user)
+  var user = await User.find({ username: req.userData.username });
   for (let i = 0; i < user[0].followings.length; i++) {
     const element = user[0].followings[i];
     var data = await Post.find({ username: element });
-    var poster = await User.find({ username: element})
+    var poster = await User.find({ username: element });
     for (let j = 0; j < data.length; j++) {
       const element = data[j];
       posts.push({
-        "post":element,
-        "name":poster[0].firstName+" "+poster[0].lastName,
-        "avatar":poster[0].avatar,
+        post: element,
+        name: poster[0].firstName + " " + poster[0].lastName,
+        avatar: poster[0].avatar,
       });
     }
   }

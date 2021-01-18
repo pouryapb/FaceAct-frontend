@@ -45,7 +45,6 @@ router.get("/:postid", (req, res, next) => {
       }
     });
 });
-
 router.post("/", checkAuth, upload.single("postmedia"), (req, res, next) => {
   const post;
   if(req.file){

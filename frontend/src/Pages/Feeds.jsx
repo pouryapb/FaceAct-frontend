@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { Container } from "@material-ui/core";
 
 import Post from "../Components/Post";
@@ -41,40 +41,62 @@ import { AuthContext } from "../Context/auth-context";
 // ];
 
 const Feeds = () => {
-  const { token } = useContext(AuthContext);
+  const { token, userId } = useContext(AuthContext);
 
-  let posts = [];
+  const [posts, setPosts] = useState([]);
 
-  fetch("http://localhost:8000/posts/feed", {
-    method: "GET",
-    headers: {
-      Authorization: "Bearer " + token,
-    },
-  })
-    .then((res) => {
-      if (!(res.status === 200 || res.status === 201)) {
-        throw new Error("failed!");
-      }
-      return res.json();
+  if (posts.length === 0) {
+    fetch("http://localhost:8000/posts/feed", {
+      method: "GET",
+      headers: {
+        Authorization: "Bearer " + token,
+      },
     })
-    .then((resBody) => {
-      posts = resBody;
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+      .then((res) => {
+        if (!(res.status === 200 || res.status === 201)) {
+          throw new Error("failed!");
+        }
+        return res.json();
+      })
+      .then((resBody) => {
+        if (resBody.length === 0) {
+          setPosts([
+            {
+              post: {
+                date: null,
+                likes: [],
+                _id: "0",
+                username: null,
+                text: "emty feed",
+                media: null,
+                mediatype: null,
+              },
+              name: " ",
+              avatar: null,
+            },
+          ]);
+        } else {
+          setPosts(resBody);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
 
   const cards = posts.map((post) => {
     return (
       <Post
-        key={post.id}
-        avatarImage={post.avatarImage}
-        authorName={post.authorName}
-        postDate={post.postDate}
-        media={post.media}
-        mediaType={post.mediaType}
-        caption={post.caption}
-        liked={post.liked}
+        key={post.post._id}
+        avatarImage={"http://localhost:8000/" + post.avatar}
+        authorName={post.name}
+        postDate={post.post.date}
+        media={"http://localhost:8000/" + post.post.media}
+        mediaType={
+          post.post.mediatype === "image" ? "img" : post.post.mediatype
+        }
+        caption={post.post.text}
+        liked={post.post.likes.includes(userId) ? true : false}
       />
     );
   });

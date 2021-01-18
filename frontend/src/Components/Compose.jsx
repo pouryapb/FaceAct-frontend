@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useContext } from "react";
 import {
   Card,
   makeStyles,
@@ -11,6 +11,7 @@ import {
   CardMedia,
 } from "@material-ui/core";
 import { AttachFile, Send } from "@material-ui/icons";
+import { AuthContext } from "../Context/auth-context";
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -30,11 +31,11 @@ const useStyles = makeStyles(() => ({
 
 const Compose = () => {
   const classes = useStyles();
+  const { token, userId } = useContext(AuthContext);
   const [caption, setCaption] = useState("");
   const [activeSend, setActiveSend] = useState(false);
   const [file, setFile] = useState(null);
   const [fileSrc, setFileSrc] = useState(null);
-
   const reader = new FileReader();
 
   const handleCaption = (event) => {
@@ -57,6 +58,34 @@ const Compose = () => {
       };
       reader.readAsDataURL(selectedFile);
     }
+  };
+
+  const submitHandler = (event) => {
+    event.preventDefault();
+    const formData = new FormData();
+    formData.append("postmedia", file);
+    formData.append("text", caption);
+    formData.append("username" , userId);
+
+    fetch("http://localhost:8000/posts", {
+      method: "POST",
+      headers: {
+        Authorization: "Bearer " + token,
+      },
+      body: formData,
+    })
+      .then((res) => {
+        if (!(res.status === 200 || res.status === 201)) {
+          throw new Error(res.status);
+        }
+        return res.json();
+      })
+      .then((resBody) => {
+        console.log(resBody);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   return (
@@ -96,6 +125,7 @@ const Compose = () => {
               </label>
               <Button
                 aria-label="send-btn"
+                onClick={submitHandler}
                 disabled={!activeSend}
                 variant="outlined"
                 endIcon={<Send />}

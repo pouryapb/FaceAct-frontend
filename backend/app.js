@@ -42,7 +42,7 @@ app.use("/uploads/", express.static("uploads"));
 
 // Routes handling
 app.use("/", usersRoute);
-app.use("/post", postsRoute);
+app.use("/posts", postsRoute);
 
 // Error handling
 app.use((req, res, next) => {

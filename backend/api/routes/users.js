@@ -247,6 +247,74 @@ router.post("/reqac/:username", checkAuth, (req, res, next) => {
   const reciver = req.params.username;
   const sender = req.userData.username;
   User.updateOne(
+    {username: reciver},
+    { $push: {followings: sender}}
+  ).exec();
+  User.updateOne(
+    { username: sender },
+    { $pull: { requests: reciver }, $push: { followers: reciver } }
+  )
+    .exec()
+    .then((user) => {
+      res.status(201).json({
+        message: "ok",
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        error: err,
+      });
+    });
+});
+
+router.post("/unreq/:username", checkAuth, (req, res, next) => {
+  const reciver = req.params.username;
+  const sender = req.userData.username;
+  User.updateOne(
+    { username: reciver },
+    { $pull: { requests: sender }}
+  )
+    .exec()
+    .then((user) => {
+      res.status(201).json({
+        message: "ok",
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        error: err,
+      });
+    });
+});
+
+router.post("/unfriend/:username", checkAuth, (req, res, next) => {
+  const reciver = req.params.username;
+  const sender = req.userData.username;
+  User.updateOne(
+    { username:reciver},
+    { $pull: { followers : sender}}
+  ).exec();
+  User.updateOne(
+    { username: sender },
+    { $pull: { following: reciver }}
+  )
+    .exec()
+    .then((user) => {
+      res.status(201).json({
+        message: "ok",
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        error: err,
+      });
+    });
+});
+
+router.post("/req/:username", checkAuth, (req, res, next) => {
+  const reciver = req.params.username;
+  const sender = req.userData.username;
+  User.updateOne(
     { username: sender },
     { $pull: { requests: reciver }, $push: { followers: reciver } }
   )

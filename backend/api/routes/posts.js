@@ -32,6 +32,34 @@ const upload = multer({
   fileFilter: fileFilter,
 });
 
+router.get("/feed", checkAuth, (req, res, next) => {
+  let posts = [];
+  User.find({ username: req.userData.username })
+    .exec()
+    .then((user) => {
+      if (user[0].followings.length > 0) {
+        user[0].followings.map((userid) => {
+          Post.find({ username: userid })
+            .exec()
+            .then((friendposts) => {
+              friendposts.map((singlepost) => {
+                posts.push(singlepost);
+              });
+            });
+        });
+        posts.sort(function (a, b) {
+          return a[date] < b[date];
+        });
+        res.statusCode(200).json(posts);
+      }
+    })
+    .catch((err) => {
+      res.status(500).json({
+        error: err,
+      });
+    });
+});
+
 router.get("/:postid", (req, res, next) => {
   Post.find({ id: postid })
     .exec()
@@ -69,43 +97,15 @@ router.post("/", checkAuth, upload.single("postmedia"), (req, res, next) => {
     });
 });
 
-router.get(
-  "/feed",
-  checkAuth,
-  (req, res, next) => {
-    const posts = {};
-    User.find({ username: req.body.username })
-      .exec()
-      .then((user) => {
-        if (user[0][following] > 0) {
-          user[0][following].map((userid) => {
-            Post.find({ username: userid })
-              .exec()
-              .then((friendposts) => {
-                friendposts.map((singlepost) => {
-                  posts.push(singlepost);
-                });
-              });
-          });
-          posts.sort(function (a, b) {
-            return a[date] < b[date];
-          });
-          res.statusCode(200).json(posts);
-        }
+router.get("/posts/:username", checkAuth, (req, res, next) => {
+  Post.find({ username: req.body.username })
+    .exec()
+    .then((posts) => {
+      posts.sort(function (a, b) {
+        return a[date] < b[date];
       });
-  }
-);
-
-router.get(
-  "/posts/:username", checkAuth, (req, res, next) => {
-    Post.find({ username: req.body.username })
-      .exec()
-      .then((posts) => {
-        posts.sort(function (a, b) {
-          return a[date] < b[date];
-        });
-        res.statusCode(200).json(posts);
-  });
+      res.statusCode(200).json(posts);
+    });
 });
 
 router.delete("/", checkAuth, (req, res, next) => {

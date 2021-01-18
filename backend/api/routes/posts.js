@@ -4,6 +4,7 @@ const multer = require("multer");
 const checkAuth = require("../middleware/check-auth");
 const User = require("../models/user");
 const Post = require("../models/post");
+const mongoose = require("mongoose");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -37,31 +38,21 @@ router.get("/:postid", (req, res, next) => {
     .then((post) => {
       if (post.length >= 1) {
         res.status(200).json({
-          post
+          post,
         });
-      }else{
-        res.status(500).json({
-        });
+      } else {
+        res.status(500).json({});
       }
     });
 });
 router.post("/", checkAuth, upload.single("postmedia"), (req, res, next) => {
-  const post;
-  if(req.file){
-    post = new Post({
-      username : req.body.username,
-      text : req.body.text,
-      media : req.file.path,
-      mediatype: req.file.mimetype.split("/")[0],
-    });
-  }else{
-    post = new Post({
-      username : req.body.username,
-      text : req.body.text,
-      media : "",
-      mediatype: "null",
-    });
-  }
+  const post = new Post({
+    _id: mongoose.Types.ObjectId(),
+    username: req.body.username,
+    text: req.body.text,
+    media: req.file ? req.file.path : null,
+    mediatype: req.file ? req.file.mimetype.split("/")[0] : null,
+  });
   post
     .save()
     .then((result) => {
@@ -78,32 +69,44 @@ router.post("/", checkAuth, upload.single("postmedia"), (req, res, next) => {
     });
 });
 
-router.get("/feed/", checkAuth, upload.single("postmedia"), (req, res, next) => {
-  const posts = {};
-  User.find({ username: req.body.username })
-    .exec()
-    .then((user) => {
-      if(user[0][following] > 0){
-        user[0][following].map((userid) => {
-          Post.find({ username:userid }).exec().then((friendposts) =>{
-            friendposts.map((singlepost) => {
-              posts.push(singlepost);
-            });
+router.get(
+  "/feed/",
+  checkAuth,
+  upload.single("postmedia"),
+  (req, res, next) => {
+    const posts = {};
+    User.find({ username: req.body.username })
+      .exec()
+      .then((user) => {
+        if (user[0][following] > 0) {
+          user[0][following].map((userid) => {
+            Post.find({ username: userid })
+              .exec()
+              .then((friendposts) => {
+                friendposts.map((singlepost) => {
+                  posts.push(singlepost);
+                });
+              });
           });
-        });
-        posts.sort(function(a,b){return a[date] < b[date]});
-        res.statusCode(200).json({
-          posts,
-        });
-      }
-    });
-});
+          posts.sort(function (a, b) {
+            return a[date] < b[date];
+          });
+          res.statusCode(200).json({
+            posts,
+          });
+        }
+      });
+  }
+);
 
 router.delete("/", checkAuth, (req, res, next) => {
-  Post.deleteOne({ id:req.body.postid, username:req.userData.username}).exec().then((result) => {
-    res.statusCode(200).json({});
-  }).catch((err) => {
-    console.log(err);
-  })
+  Post.deleteOne({ id: req.body.postid, username: req.userData.username })
+    .exec()
+    .then((result) => {
+      res.statusCode(200).json({});
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 });
 module.exports = router;

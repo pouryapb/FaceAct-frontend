@@ -83,9 +83,11 @@ router.post("/", checkAuth, upload.single("postmedia"), (req, res, next) => {
   });
   post
     .save()
-    .then((result) => {
+    .then( (result) =>{
       console.log(result);
-      res.status(201).json({
+      console.log(result._id);
+      User.updateOne({ username: req.userData.username }, { $push: { posts: result._id } } ).exec();
+      res.status(200).json({
         message: "posted",
       });
     })

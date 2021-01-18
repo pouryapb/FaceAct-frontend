@@ -92,12 +92,16 @@ const Profile = ({ match }) => {
       updateUser();
     }
 
-    fetch("http://localhost:8000/posts/userposts/" + userId, {
-      method: "GET",
-      headers: {
-        Authorization: "Bearer " + token,
-      },
-    })
+    fetch(
+      "http://localhost:8000/posts/userposts/" +
+        (match ? match.params.username : userId),
+      {
+        method: "GET",
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      }
+    )
       .then((res) => {
         if (!(res.status === 200 || res.status === 201 || res.status === 304)) {
           throw new Error("failed!");
@@ -105,7 +109,6 @@ const Profile = ({ match }) => {
         return res.json();
       })
       .then((resBody) => {
-        console.log(resBody);
         setPosts(resBody);
       })
       .catch((err) => {
@@ -166,7 +169,7 @@ const Profile = ({ match }) => {
 
   const updateInfo = (requestBody) => {
     fetch("http://localhost:8000/uinfo/" + userId, {
-      method: "POST",
+      method: "GET",
       headers: {
         "Content-Type": "application/json",
         Authorization: "Bearer " + token,
@@ -227,7 +230,10 @@ const Profile = ({ match }) => {
   return (
     <Container maxWidth="sm">
       <Card className={classes.root}>
-        <CardHeader title={userId} subheader={name} />
+        <CardHeader
+          title={match ? match.params.username : userId}
+          subheader={name}
+        />
         <CardContent>
           <Grid container alignItems="center" spacing={2}>
             <Grid className={classes.gridItem} item xs={3}>

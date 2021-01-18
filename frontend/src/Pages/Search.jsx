@@ -31,12 +31,43 @@ const Items = ({ value, link, image }) => {
 
 const Search = () => {
   const [searchValue, setSearchValue] = useState("");
+  const [list, setList] = useState([]);
 
-  const list = [
-    <Items value={"iterm 1"} link={"#"} />,
-    <Items value={"iterm 2"} link={"#"} />,
-    <Items value={"iterm 3"} link={"#"} />,
-  ];
+  const handleSearch = (event) => {
+    const input = event.target.value;
+    setSearchValue(input);
+
+    if (input !== "") {
+      fetch("http://localhost:8000/search/" + input, {
+        method: "GET",
+      })
+        .then((res) => {
+          if (!(res.status === 200 || res.status === 201)) {
+            throw new Error("failed!");
+          }
+          return res.json();
+        })
+        .then((resBody) => {
+          setList(
+            resBody.map((user) => {
+              return (
+                <Items
+                  key={user._id}
+                  value={user.firstName + " " + user.lastName}
+                  link={"http://localhost:3000/" + user.username}
+                  image={user.avatar}
+                />
+              );
+            })
+          );
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else {
+      setList([]);
+    }
+  };
 
   return (
     <Container maxWidth="sm">
@@ -49,9 +80,7 @@ const Search = () => {
         name="search"
         autoComplete="search"
         value={searchValue}
-        onChange={(event) => {
-          setSearchValue(event.target.value);
-        }}
+        onChange={handleSearch}
       />
       {list}
     </Container>

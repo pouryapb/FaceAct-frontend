@@ -43,7 +43,7 @@ const Post = ({
       <CardHeader
         avatar={
           <Avatar alt={authorName} src={avatarImage} className={classes.avatar}>
-            {authorName}
+            {authorName[0]}
           </Avatar>
         }
         action={

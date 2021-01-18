@@ -120,6 +120,24 @@ router.post("/login", (req, res, next) => {
     });
 });
 
+router.get("/search/:username", (req, res, next) => {
+  const usernameRegex = new RegExp(req.params.username + ".*", "i");
+  console.log(usernameRegex);
+
+  User.find({ username: usernameRegex })
+    .select("username firstName lastName avatar")
+    .exec()
+    .then((result) => {
+      res.status(200).json(result);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: err,
+      });
+    });
+});
+
 router.get("/:username", (req, res, next) => {
   const username = req.params.username;
 

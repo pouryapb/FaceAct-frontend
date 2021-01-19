@@ -56,7 +56,7 @@ router.get("/userposts/:username", checkAuth, (req, res, next) => {
     .exec()
     .then((posts) => {
       posts.sort((a, b) => {
-        return a.date < b.date;
+        return a.date > b.date;
       });
       res.status(200).json(posts);
     })

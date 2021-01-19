@@ -48,6 +48,15 @@ router.get("/feed", checkAuth, async (req, res, next) => {
       });
     }
   }
+  posts.sort(function(x, y) {
+    if (x < y) {
+      return 1;
+    }
+    if (x > y) {
+      return -1;
+    }
+    return 0;
+  });
   res.status(200).json(posts);
 });
 
@@ -55,8 +64,15 @@ router.get("/userposts/:username", checkAuth, (req, res, next) => {
   Post.find({ username: req.params.username })
     .exec()
     .then((posts) => {
-      posts.sort((a, b) => {
-        return a.date > b.date;
+      console.log(posts);
+      posts.sort(function(x, y) {
+        if (x < y) {
+          return 1;
+        }
+        if (x > y) {
+          return -1;
+        }
+        return 0;
       });
       res.status(200).json(posts);
     })

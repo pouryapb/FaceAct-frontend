@@ -1,11 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
 const multer = require("multer");
 
 const checkAuth = require("../middleware/check-auth");
-const User = require("../models/user");
+const usersControlers = require("../controllers/users");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -33,315 +31,37 @@ const upload = multer({
   fileFilter: fileFilter,
 });
 
-router.post("/signup", (req, res, next) => {
-  User.find({ username: req.body.username })
-    .exec()
-    .then((user) => {
-      if (user.length >= 1) {
-        return res.status(409).json({
-          message: "user exists",
-        });
-      } else {
-        bcrypt.hash(req.body.password, 10, (err, hash) => {
-          if (err) {
-            return res.status(500).json({
-              error: err,
-            });
-          } else {
-            const user = new User({
-              username: req.body.username,
-              firstName: req.body.firstName,
-              lastName: req.body.lastName,
-              email: req.body.email,
-              password: hash,
-            });
-            user
-              .save()
-              .then((result) => {
-                console.log(result);
-                res.status(201).json({
-                  message: "user created",
-                });
-              })
-              .catch((err) => {
-                console.log(err);
-                res.status(500).json({
-                  error: err,
-                });
-              });
-          }
-        });
-      }
-    });
-});
+router.post("/signup", usersControlers.signup);
 
-router.post("/login", (req, res, next) => {
-  User.find({ username: req.body.username })
-    .exec()
-    .then((user) => {
-      if (user.length < 1) {
-        return res.status(401).json({
-          message: "auth failed",
-        });
-      }
-      bcrypt.compare(req.body.password, user[0].password, (err, result) => {
-        if (err) {
-          return res.status(401).json({
-            message: "auth failed",
-          });
-        }
-        if (result) {
-          const token = jwt.sign(
-            {
-              username: user[0].username,
-            },
-            process.env.JWT_KEY,
-            {
-              expiresIn: "2h",
-            }
-          );
-          return res.status(200).json({
-            message: "auth successful",
-            token: token,
-            requests: user[0].requests,
-            followings: user[0].followings,
-          });
-        }
-        res.status(401).json({
-          message: "auth failed",
-        });
-      });
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json({
-        error: err,
-      });
-    });
-});
+router.post("/login", usersControlers.login);
 
-router.get("/search/:username", (req, res, next) => {
-  const usernameRegex = new RegExp(req.params.username + ".*", "i");
-  console.log(usernameRegex);
+router.get("/search/:username", usersControlers.search);
 
-  User.find({ username: usernameRegex })
-    .select("username firstName lastName avatar")
-    .exec()
-    .then((result) => {
-      res.status(200).json(result);
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json({
-        error: err,
-      });
-    });
-});
+router.get("/:username", usersControlers.get_user_info_public);
 
-router.get("/:username", (req, res, next) => {
-  const username = req.params.username;
+router.get(
+  "/uinfo/:username",
+  checkAuth,
+  usersControlers.get_user_info_private
+);
 
-  User.find({ username: username })
-    .select(
-      "avatar username firstName lastName posts followings followers requests"
-    )
-    .exec()
-    .then((user) => {
-      if (user.length < 1) {
-        return res.status(404).json({
-          message: "user not found",
-        });
-      }
-      res.status(200).json(user[0]);
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json({
-        error: err,
-      });
-    });
-});
-
-router.get("/uinfo/:username", checkAuth, (req, res, next) => {
-  const username = req.params.username;
-  if (username !== req.userData.username) {
-    return res.status(401).json({
-      message: "auth failed",
-    });
-  }
-  User.find({ username: username })
-    .select(
-      "avatar username firstName lastName posts followings followers requests email"
-    )
-    .then((user) => {
-      res.status(200).json(user[0]);
-    })
-    .catch((err) => {
-      res.status(500).json({
-        error: err,
-      });
-    });
-});
-
-router.patch("/uinfo/:username", checkAuth, (req, res, next) => {
-  const username = req.params.username;
-  if (username !== req.userData.username) {
-    return res.status(401).json({
-      message: "auth failed",
-    });
-  }
-  const updateOps = {};
-  for (const ops of req.body) {
-    updateOps[ops.propName] = ops.value;
-  }
-  User.updateOne({ username: username }, { $set: updateOps })
-    .exec()
-    .then((result) => {
-      res.status(201).json(result);
-    })
-    .catch((err) => {
-      res.status(500).json({
-        error: err,
-      });
-    });
-});
+router.patch("/uinfo/:username", checkAuth, usersControlers.patch_user_info);
 
 router.patch(
   "/avatarup/:username",
   checkAuth,
   upload.single("avatarImg"),
-  (req, res, next) => {
-    const username = req.params.username;
-    if (username !== req.userData.username) {
-      return res.status(401).json({
-        message: "auth failed",
-      });
-    }
-    User.updateOne({ username: username }, { $set: { avatar: req.file.path } })
-      .exec()
-      .then((result) => {
-        res.status(201).json(result);
-      })
-      .catch((err) => {
-        res.status(500).json({
-          error: err,
-        });
-      });
-  }
+  usersControlers.patch_avatar
 );
 
-router.post("/req/:username", checkAuth, (req, res, next) => {
-  const reciver = req.params.username;
-  const sender = req.userData.username;
-  User.updateOne({ username: reciver }, { $push: { requests: sender } })
-    .exec()
-    .then((result) => {
-      res.status(201).json(result);
-    })
-    .catch((err) => {
-      res.status(500).json({
-        error: err,
-      });
-    });
-});
+router.post("/req/:username", checkAuth, usersControlers.send_request);
 
-router.post("/reqac/:username", checkAuth, (req, res, next) => {
-  const reciver = req.params.username;
-  const sender = req.userData.username;
-  User.updateOne(
-    { username: reciver },
-    { $push: { followings: sender } }
-  ).exec();
-  User.updateOne(
-    { username: sender },
-    { $pull: { requests: reciver }, $push: { followers: reciver } }
-  )
-    .exec()
-    .then((user) => {
-      res.status(201).json({
-        message: "ok",
-      });
-    })
-    .catch((err) => {
-      res.status(500).json({
-        error: err,
-      });
-    });
-});
+router.post("/reqac/:username", checkAuth, usersControlers.accept_request);
 
-router.post("/unreq/:username", checkAuth, (req, res, next) => {
-  const reciver = req.params.username;
-  const sender = req.userData.username;
-  User.updateOne({ username: reciver }, { $pull: { requests: sender } })
-    .exec()
-    .then((user) => {
-      res.status(201).json({
-        message: "ok",
-      });
-    })
-    .catch((err) => {
-      res.status(500).json({
-        error: err,
-      });
-    });
-});
+router.post("/unreq/:username", checkAuth, usersControlers.unsend_request);
 
-router.post("/unfriend/:username", checkAuth, (req, res, next) => {
-  const reciver = req.params.username;
-  const sender = req.userData.username;
-  User.updateOne(
-    { username: reciver },
-    { $pull: { followers: sender } }
-  ).exec();
-  User.updateOne({ username: sender }, { $pull: { followings: reciver } })
-    .exec()
-    .then((user) => {
-      res.status(201).json({
-        message: "ok",
-      });
-    })
-    .catch((err) => {
-      res.status(500).json({
-        error: err,
-      });
-    });
-});
+router.post("/unfriend/:username", checkAuth, usersControlers.unfriend);
 
-router.post("/req/:username", checkAuth, (req, res, next) => {
-  const reciver = req.params.username;
-  const sender = req.userData.username;
-  User.updateOne(
-    { username: sender },
-    { $pull: { requests: reciver }, $push: { followers: reciver } }
-  )
-    .exec()
-    .then((user) => {
-      res.status(201).json({
-        message: "ok",
-      });
-    })
-    .catch((err) => {
-      res.status(500).json({
-        error: err,
-      });
-    });
-});
-
-router.post("/reqden/:username", checkAuth, (req, res, next) => {
-  const reciver = req.params.username;
-  const sender = req.userData.username;
-  User.updateOne({ username: sender }, { $pull: { requests: reciver } })
-    .exec()
-    .then((user) => {
-      res.status(201).json({
-        message: "ok",
-      });
-    })
-    .catch((err) => {
-      res.status(500).json({
-        error: err,
-      });
-    });
-});
+router.post("/reqden/:username", checkAuth, usersControlers.deny_request);
 
 module.exports = router;

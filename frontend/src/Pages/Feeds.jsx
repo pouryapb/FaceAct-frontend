@@ -84,6 +84,10 @@ const Feeds = () => {
       });
   }
 
+  const updater = () => {
+    setPosts([]);
+  };
+
   const cards = posts.map((post) => {
     return (
       <Post
@@ -100,6 +104,7 @@ const Feeds = () => {
         caption={post.post.text}
         liked={post.post.likes.includes(userId) ? true : false}
         likeCount={post.post.likes.length}
+        updater={updater}
       />
     );
   });

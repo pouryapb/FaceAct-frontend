@@ -42,13 +42,13 @@ const Post = ({
   caption,
   liked,
   likeCount,
+  updater,
 }) => {
   const classes = useStyles();
 
   const { token, userId, ip } = useContext(AuthContext);
 
   const [like, setLike] = useState(liked);
-  const [deleted, setDeleted] = useState(null);
   const [menuAnchor, setMenuAnchor] = useState(null);
   const [count, setCount] = useState(likeCount);
 
@@ -64,8 +64,8 @@ const Post = ({
       },
     })
       .then(() => {
-        setDeleted(true);
         handleMenuClose();
+        updater();
       })
       .catch((err) => {
         console.log(err);
@@ -147,7 +147,7 @@ const Post = ({
             </React.Fragment>
           )
         }
-        title={deleted ? "deleted" : authorName}
+        title={authorName}
         subheader={postDate}
       />
       <Divider />

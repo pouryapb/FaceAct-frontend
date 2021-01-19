@@ -235,6 +235,10 @@ const Profile = ({ match }) => {
     }
   };
 
+  const updater = () => {
+    firstLoad();
+  };
+
   const listOfPosts = posts.map((post) => {
     return (
       <Post
@@ -249,6 +253,7 @@ const Profile = ({ match }) => {
         caption={post.text}
         liked={post.likes.includes(userId) ? true : false}
         likeCount={post.likes.length}
+        updater={updater}
       />
     );
   });
@@ -272,7 +277,12 @@ const Profile = ({ match }) => {
                 <Avatar src={avatar} className={classes.avatar} />
               </Box>
             </Grid>
-            <Grid className={classes.gridItem} item xs={3} style={{cursor: "default"}}>
+            <Grid
+              className={classes.gridItem}
+              item
+              xs={3}
+              style={{ cursor: "default" }}
+            >
               <Link
                 className={classes.link}
                 component="p"
@@ -316,32 +326,36 @@ const Profile = ({ match }) => {
                 },
               }}
             >
-              {follower.length !== 0 ? follower.map((element, index) => {
-                return (
-                  <MenuItem key={index} selected={false}>
-                    <Link
-                      href={"http://localhost:3000/" + element}
-                      component="button"
-                      color="textPrimary"
-                      variant="button"
-                      underline="none"
-                    >
-                      {element}
-                    </Link>
-                  </MenuItem>
-                );
-              }):<MenuItem selected={false} disabled>
-              <Link
-                disabled
-                href="#"
-                component="p"
-                color="textSecondary"
-                variant="button"
-                underline="none"
-              >
-                ♫ Lonely, I'm Mr. Lonely~ ♫
-              </Link>
-            </MenuItem>}
+              {follower.length !== 0 ? (
+                follower.map((element, index) => {
+                  return (
+                    <MenuItem key={index} selected={false}>
+                      <Link
+                        href={"http://localhost:3000/" + element}
+                        component="button"
+                        color="textPrimary"
+                        variant="button"
+                        underline="none"
+                      >
+                        {element}
+                      </Link>
+                    </MenuItem>
+                  );
+                })
+              ) : (
+                <MenuItem selected={false} disabled>
+                  <Link
+                    disabled
+                    href="#"
+                    component="p"
+                    color="textSecondary"
+                    variant="button"
+                    underline="none"
+                  >
+                    ♫ Lonely, I'm Mr. Lonely~ ♫
+                  </Link>
+                </MenuItem>
+              )}
             </Menu>
             <Grid
               className={classes.gridItem}

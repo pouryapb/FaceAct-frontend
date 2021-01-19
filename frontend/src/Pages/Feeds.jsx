@@ -89,6 +89,7 @@ const Feeds = () => {
       <Post
         id={post.post._id}
         key={post.post._id}
+        username={post.post.username}
         avatarImage={"http://localhost:8000/" + post.avatar}
         authorName={post.name}
         postDate={post.post.date}

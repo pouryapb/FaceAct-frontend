@@ -231,6 +231,7 @@ const Profile = ({ match }) => {
       <Post
         id={post._id}
         key={post._id}
+        username={post.username}
         avatarImage={avatar}
         authorName={name}
         postDate={post.date}

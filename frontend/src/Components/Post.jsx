@@ -31,6 +31,7 @@ const useStyles = makeStyles(() => ({
 
 const Post = ({
   id,
+  username,
   avatarImage,
   authorName,
   postDate,

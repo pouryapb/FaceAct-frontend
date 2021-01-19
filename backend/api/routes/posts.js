@@ -101,6 +101,7 @@ router.get("/:postid", (req, res, next) => {
       });
     });
 });
+
 router.post("/", checkAuth, upload.single("postmedia"), (req, res, next) => {
   const post = new Post({
     _id: mongoose.Types.ObjectId(),
@@ -140,4 +141,35 @@ router.delete("/", checkAuth, (req, res, next) => {
       console.log(err);
     });
 });
+
+router.get("/like/:postid", checkAuth, (req,res,next) => {
+  Post.updateOne({ id: req.params.postid }, { $push: { likes: req.userData.username } })
+    .exec()
+    .then(() => {
+      res.status(201).json({
+        message: "ok",
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        error: err,
+      });
+    });
+})
+
+router.get("/dislike/:postid", checkAuth, (req,res,next) => {
+  Post.updateOne({ id: req.params.postid }, { $pull: { likes: req.userData.username } })
+    .exec()
+    .then(() => {
+      res.status(201).json({
+        message: "ok",
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        error: err,
+      });
+    });
+})
+
 module.exports = router;

@@ -52,8 +52,6 @@ const Post = ({
   const [menuAnchor, setMenuAnchor] = useState(null);
   const [count, setCount] = useState(likeCount);
 
-  const menuOpen = Boolean(menuAnchor);
-
   const handleMenuClick = (event) => {
     setMenuAnchor(event.currentTarget);
   };
@@ -67,6 +65,7 @@ const Post = ({
     })
       .then(() => {
         setDeleted(true);
+        handleMenuClose();
       })
       .catch((err) => {
         console.log(err);
@@ -132,7 +131,7 @@ const Post = ({
                 id="more-menu"
                 anchorEl={menuAnchor}
                 keepMounted
-                open={menuOpen}
+                open={menuAnchor}
                 onClose={handleMenuClose}
                 PaperProps={{
                   style: {

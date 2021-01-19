@@ -10,6 +10,8 @@ import {
   Container,
   Grid,
   Link,
+  Menu,
+  MenuItem,
   Box,
   Button,
 } from "@material-ui/core";
@@ -28,6 +30,7 @@ const useStyles = makeStyles((theme) => ({
   },
   gridItem: {
     textAlign: "center",
+    cursor: "pointer",
   },
   link: {
     fontSize: "0.6rem",
@@ -52,6 +55,21 @@ const Profile = ({ match }) => {
   const [follower, setFollower] = useState([]);
   const [following, setFollowing] = useState([]);
   const [followingState, setFollowingState] = useState("Follow");
+  const [followingMenuAnchor, setFollowingMenuAnchor] = useState(null);
+  const [followerMenuAnchor, setFollowerMenuAnchor] = useState(null);
+
+  const handleFollowing = (event) => {
+    setFollowingMenuAnchor(event.currentTarget);
+  };
+  const handleFollowers = (event) => {
+    setFollowerMenuAnchor(event.currentTarget);
+  };
+  const handleFollowingMenuClose = () => {
+    setFollowingMenuAnchor(null);
+  };
+  const handleFollowerMenuClose = () => {
+    setFollowerMenuAnchor(null);
+  };
 
   const updateUser = () => {
     fetch(ip + "/uinfo/" + userId, {
@@ -254,10 +272,10 @@ const Profile = ({ match }) => {
                 <Avatar src={avatar} className={classes.avatar} />
               </Box>
             </Grid>
-            <Grid className={classes.gridItem} item xs={3}>
+            <Grid className={classes.gridItem} item xs={3} style={{cursor: "default"}}>
               <Link
                 className={classes.link}
-                component="button"
+                component="p"
                 color="textPrimary"
                 variant="button"
                 underline="none"
@@ -266,10 +284,17 @@ const Profile = ({ match }) => {
               </Link>
               <Typography variant="subtitle2">{posts.length}</Typography>
             </Grid>
-            <Grid className={classes.gridItem} item xs={3}>
+            <Grid
+              className={classes.gridItem}
+              item
+              xs={3}
+              aria-haspopup="true"
+              aria-controls="followerList"
+              onClick={handleFollowers}
+            >
               <Link
                 className={classes.link}
-                component="button"
+                component="p"
                 color="textPrimary"
                 variant="button"
                 underline="none"
@@ -278,7 +303,54 @@ const Profile = ({ match }) => {
               </Link>
               <Typography variant="subtitle2">{follower.length}</Typography>
             </Grid>
-            <Grid className={classes.gridItem} item xs={3}>
+            <Menu
+              id="followerList"
+              anchorEl={followerMenuAnchor}
+              keepMounted
+              open={Boolean(followerMenuAnchor)}
+              onClose={handleFollowerMenuClose}
+              PaperProps={{
+                style: {
+                  // maxHeight: ITEM_HEIGHT * 2.5,
+                  minWidth: "20ch",
+                },
+              }}
+            >
+              {follower.length !== 0 ? follower.map((element, index) => {
+                return (
+                  <MenuItem key={index} selected={false}>
+                    <Link
+                      href={"http://localhost:3000/" + element}
+                      component="button"
+                      color="textPrimary"
+                      variant="button"
+                      underline="none"
+                    >
+                      {element}
+                    </Link>
+                  </MenuItem>
+                );
+              }):<MenuItem selected={false} disabled>
+              <Link
+                disabled
+                href="#"
+                component="p"
+                color="textSecondary"
+                variant="button"
+                underline="none"
+              >
+                ♫ Lonely, I'm Mr. Lonely~ ♫
+              </Link>
+            </MenuItem>}
+            </Menu>
+            <Grid
+              className={classes.gridItem}
+              item
+              xs={3}
+              aria-haspopup="true"
+              aria-controls="followingList"
+              onClick={handleFollowing}
+            >
               <Link
                 className={classes.link}
                 component="button"
@@ -290,6 +362,50 @@ const Profile = ({ match }) => {
               </Link>
               <Typography variant="subtitle2">{following.length}</Typography>
             </Grid>
+            <Menu
+              id="followingList"
+              anchorEl={followingMenuAnchor}
+              keepMounted
+              open={Boolean(followingMenuAnchor)}
+              onClose={handleFollowingMenuClose}
+              PaperProps={{
+                style: {
+                  // maxHeight: ITEM_HEIGHT * 2.5,
+                  minWidth: "20ch",
+                },
+              }}
+            >
+              {following.length !== 0 ? (
+                following.map((element, index) => {
+                  return (
+                    <MenuItem key={index} selected={false}>
+                      <Link
+                        href={"http://localhost:3000/" + element}
+                        component="button"
+                        color="textPrimary"
+                        variant="button"
+                        underline="none"
+                      >
+                        {element}
+                      </Link>
+                    </MenuItem>
+                  );
+                })
+              ) : (
+                <MenuItem selected={false} disabled>
+                  <Link
+                    disabled
+                    href="#"
+                    component="p"
+                    color="textSecondary"
+                    variant="button"
+                    underline="none"
+                  >
+                    ♫ I have nobody for my own~ ♫
+                  </Link>
+                </MenuItem>
+              )}
+            </Menu>
           </Grid>
           {match && token && match.params.username !== userId && (
             <Button

@@ -35,8 +35,8 @@ const upload = multer({
 exports.get_feed = async (req, res, next) => {
   let posts = [];
   var user = await User.find({ username: req.userData.username });
-  for (let i = 0; i < user[0].followings.length; i++) {
-    const element = user[0].followings[i];
+  for (let i = 0; i <= user[0].followings.length; i++) {
+    const element = (i===0?req.userData.username:user[0].followings[i-1]);
     var data = await Post.find({ username: element });
     var poster = await User.find({ username: element });
     for (let j = 0; j < data.length; j++) {
@@ -48,11 +48,11 @@ exports.get_feed = async (req, res, next) => {
       });
     }
   }
-  posts.sort(function (x, y) {
-    if (x < y) {
+  posts.sort((x, y) => {
+    if (Date.parse(x.post.date) < Date.parse(y.post.date)) {
       return 1;
     }
-    if (x > y) {
+    if (Date.parse(x.post.date) > Date.parse(y.post.date)) {
       return -1;
     }
     return 0;

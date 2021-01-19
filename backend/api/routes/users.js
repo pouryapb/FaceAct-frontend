@@ -142,7 +142,9 @@ router.get("/:username", (req, res, next) => {
   const username = req.params.username;
 
   User.find({ username: username })
-    .select("avatar username firstName lastName posts followings followers")
+    .select(
+      "avatar username firstName lastName posts followings followers requests"
+    )
     .exec()
     .then((user) => {
       if (user.length < 1) {
@@ -247,8 +249,8 @@ router.post("/reqac/:username", checkAuth, (req, res, next) => {
   const reciver = req.params.username;
   const sender = req.userData.username;
   User.updateOne(
-    {username: reciver},
-    { $push: {followings: sender}}
+    { username: reciver },
+    { $push: { followings: sender } }
   ).exec();
   User.updateOne(
     { username: sender },
@@ -270,10 +272,7 @@ router.post("/reqac/:username", checkAuth, (req, res, next) => {
 router.post("/unreq/:username", checkAuth, (req, res, next) => {
   const reciver = req.params.username;
   const sender = req.userData.username;
-  User.updateOne(
-    { username: reciver },
-    { $pull: { requests: sender }}
-  )
+  User.updateOne({ username: reciver }, { $pull: { requests: sender } })
     .exec()
     .then((user) => {
       res.status(201).json({
@@ -291,13 +290,10 @@ router.post("/unfriend/:username", checkAuth, (req, res, next) => {
   const reciver = req.params.username;
   const sender = req.userData.username;
   User.updateOne(
-    { username:reciver},
-    { $pull: { followers: sender}}
+    { username: reciver },
+    { $pull: { followers: sender } }
   ).exec();
-  User.updateOne(
-    { username: sender },
-    { $pull: { followings: reciver }}
-  )
+  User.updateOne({ username: sender }, { $pull: { followings: reciver } })
     .exec()
     .then((user) => {
       res.status(201).json({

@@ -1,4 +1,4 @@
-import React, { useState,useContext } from "react";
+import React, { useState, useContext } from "react";
 import {
   Card,
   makeStyles,
@@ -65,7 +65,7 @@ const Compose = () => {
     const formData = new FormData();
     formData.append("postmedia", file);
     formData.append("text", caption);
-    formData.append("username" , userId);
+    formData.append("username", userId);
 
     fetch("http://localhost:8000/posts", {
       method: "POST",
@@ -86,6 +86,10 @@ const Compose = () => {
       .catch((err) => {
         console.log(err);
       });
+
+    setCaption("");
+    setFile(null);
+    setFileSrc(null);
   };
 
   return (

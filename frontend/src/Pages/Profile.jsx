@@ -40,16 +40,15 @@ const Profile = ({ match }) => {
   const {
     token,
     userId,
-    requests,
-    followings,
     setRequests,
     setFollowings,
+    setFollowers,
   } = useContext(AuthContext);
 
   const [avatar, setAvatar] = useState(null);
   const [name, setName] = useState("");
   const [posts, setPosts] = useState([]);
-  const [followers, setFollowers] = useState([]);
+  const [follower, setFollower] = useState([]);
   const [following, setFollowing] = useState([]);
   const [followingState, setFollowingState] = useState("Follow");
 
@@ -67,24 +66,51 @@ const Profile = ({ match }) => {
         return res.json();
       })
       .then((resBody) => {
-        setRequests(resBody.requests);
-        setFollowings(resBody.followings);
+        const reqs = resBody.requests;
+        const flwings = resBody.followings;
+        const flwers = resBody.followers;
 
-        if (match) {
-          const id = match.params.username;
-
-          if (!requests.includes(id) && !followings.includes(id)) {
-            setFollowingState("Follow");
-          } else if (!requests.includes(id) && followings.includes(id)) {
-            setFollowingState("Unfollow");
-          } else if (requests.includes(id) && !followings.includes(id)) {
-            setFollowingState("Request sent");
-          }
-        }
+        setRequests(reqs);
+        setFollowings(flwings);
+        setFollowers(flwers);
+        setFollowing(flwings);
+        setFollower(flwers);
       })
       .catch((err) => {
         console.log(err);
       });
+
+    if (match) {
+      const id = match.params.username;
+      fetch("http://localhost:8000/" + id, {
+        method: "GET",
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      })
+        .then((res) => {
+          if (
+            !(res.status === 200 || res.status === 201 || res.status === 304)
+          ) {
+            throw new Error("failed!");
+          }
+          return res.json();
+        })
+        .then((resBody) => {
+          const reqs = resBody.requests;
+
+          if (!reqs.includes(userId) && !following.includes(id)) {
+            setFollowingState("Follow");
+          } else if (!reqs.includes(userId) && following.includes(id)) {
+            setFollowingState("Unfollow");
+          } else if (reqs.includes(userId)) {
+            setFollowingState("Request sent");
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   };
 
   const firstLoad = () => {
@@ -136,7 +162,7 @@ const Profile = ({ match }) => {
           resBody.avatar ? "http://localhost:8000/" + resBody.avatar : null
         );
         setName(resBody.firstName + " " + resBody.lastName);
-        setFollowers(resBody.followers);
+        setFollower(resBody.followers);
         setFollowing(resBody.followings);
       })
       .catch((err) => {
@@ -167,48 +193,36 @@ const Profile = ({ match }) => {
       });
   };
 
-  const updateInfo = (requestBody) => {
-    fetch("http://localhost:8000/uinfo/" + userId, {
-      method: "GET",
+  const unfriend = () => {
+    const id = match.params.username;
+    fetch("http://localhost:8000/unfriend/" + id, {
+      method: "POST",
       headers: {
-        "Content-Type": "application/json",
         Authorization: "Bearer " + token,
       },
-      body: JSON.stringify(requestBody),
     })
       .then((res) => {
         if (!(res.status === 200 || res.status === 201)) {
           throw new Error("failed!");
         }
       })
-      .then((resBody) => {
-        setFollowers(resBody.followers);
-        setFollowing(resBody.followings);
-      })
+      .then()
       .catch((err) => {
         console.log(err);
       });
   };
 
   const followHandle = () => {
-    const id = match.params.username;
-
     if (followingState === "Unfollow") {
       setFollowingState("Follow");
-      const requestBody = [
-        {
-          propName: "followings",
-          value: followings.filter((value, index, arr) => {
-            return value !== id;
-          }),
-        },
-      ];
-      updateInfo(requestBody);
-      updateUser();
+      unfriend();
+      //setTimeout(() => {}, 5000);
+      //updateUser();
     } else if (followingState === "Follow") {
       setFollowingState("Request sent");
       req();
-      updateInfo();
+      //setTimeout(() => {}, 5000);
+      //updateUser();
     }
   };
 
@@ -268,7 +282,7 @@ const Profile = ({ match }) => {
               >
                 Followers
               </Link>
-              <Typography variant="subtitle2">{followers.length}</Typography>
+              <Typography variant="subtitle2">{follower.length}</Typography>
             </Grid>
             <Grid className={classes.gridItem} item xs={3}>
               <Link

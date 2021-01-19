@@ -41,16 +41,17 @@ const Post = ({
   mediaType,
   caption,
   liked,
+  likeCount,
 }) => {
   const classes = useStyles();
 
-  const [like, setLike] = useState(liked);
-
-  const [deleted, setDeleted] = useState(null);
-
   const { token, userId, ip } = useContext(AuthContext);
 
-  const [menuAnchor, setMenuAnchor] = React.useState(null);
+  const [like, setLike] = useState(liked);
+  const [deleted, setDeleted] = useState(null);
+  const [menuAnchor, setMenuAnchor] = useState(null);
+  const [count, setCount] = useState(likeCount);
+
   const menuOpen = Boolean(menuAnchor);
 
   const handleMenuClick = (event) => {
@@ -86,6 +87,7 @@ const Post = ({
       })
         .then(() => {
           setLike(false);
+          setCount(count - 1);
         })
         .catch((err) => {
           console.log(err);
@@ -99,6 +101,7 @@ const Post = ({
       })
         .then(() => {
           setLike(true);
+          setCount(count + 1);
         })
         .catch((err) => {
           console.log(err);
@@ -158,6 +161,7 @@ const Post = ({
       <CardActions disableSpacing>
         <IconButton onClick={likeHandle} aria-label="Like">
           <FavoriteIcon style={{ color: like && red[600] }} />
+          {count}
         </IconButton>
         {/* <IconButton aria-label="share">
           <ShareIcon />

@@ -99,6 +99,7 @@ const Feeds = () => {
         }
         caption={post.post.text}
         liked={post.post.likes.includes(userId) ? true : false}
+        likeCount={post.post.likes.length}
       />
     );
   });

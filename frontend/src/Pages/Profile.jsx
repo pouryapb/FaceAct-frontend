@@ -230,6 +230,7 @@ const Profile = ({ match }) => {
         mediaType={post.mediatype === "image" ? "img" : post.mediatype}
         caption={post.text}
         liked={post.likes.includes(userId) ? true : false}
+        likeCount={post.likes.length}
       />
     );
   });

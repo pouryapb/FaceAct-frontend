@@ -111,7 +111,7 @@ const Feeds = () => {
 
   return (
     <Container maxWidth="sm">
-      <Compose />
+      <Compose updater={updater} />
       {cards}
     </Container>
   );

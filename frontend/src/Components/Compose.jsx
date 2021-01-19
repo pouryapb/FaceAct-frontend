@@ -29,7 +29,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const Compose = () => {
+const Compose = ({ updater }) => {
   const classes = useStyles();
   const { token, userId, ip } = useContext(AuthContext);
   const [caption, setCaption] = useState("");
@@ -82,6 +82,7 @@ const Compose = () => {
       })
       .then((resBody) => {
         console.log(resBody);
+        updater();
       })
       .catch((err) => {
         console.log(err);

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext, useState } from "react";
 import {
   makeStyles,
   Card,
@@ -18,6 +18,8 @@ import {
 } from "@material-ui/icons";
 import { red } from "@material-ui/core/colors";
 
+import { AuthContext } from "../Context/auth-context";
+
 const useStyles = makeStyles(() => ({
   root: {
     marginBottom: "25px",
@@ -28,6 +30,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 const Post = ({
+  id,
   avatarImage,
   authorName,
   postDate,
@@ -37,6 +40,40 @@ const Post = ({
   liked,
 }) => {
   const classes = useStyles();
+
+  const [like, setLike] = useState(liked);
+
+  const { token } = useContext(AuthContext);
+
+  const likeHandle = () => {
+    if (like) {
+      fetch("http://localhost:8000/posts/dislike/" + id, {
+        method: "GET",
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      })
+        .then(() => {
+          setLike(false);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else {
+      fetch("http://localhost:8000/posts/like/" + id, {
+        method: "GET",
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      })
+        .then(() => {
+          setLike(true);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  };
 
   return (
     <Card className={classes.root}>
@@ -62,8 +99,8 @@ const Post = ({
         </Typography>
       </CardContent>
       <CardActions disableSpacing>
-        <IconButton aria-label="Like">
-          <FavoriteIcon style={{ color: liked && red[600] }} />
+        <IconButton onClick={likeHandle} aria-label="Like">
+          <FavoriteIcon style={{ color: like && red[600] }} />
         </IconButton>
         <IconButton aria-label="share">
           <ShareIcon />

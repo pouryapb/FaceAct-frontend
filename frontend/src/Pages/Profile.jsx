@@ -229,6 +229,7 @@ const Profile = ({ match }) => {
   const listOfPosts = posts.map((post) => {
     return (
       <Post
+        id={post._id}
         key={post._id}
         avatarImage={avatar}
         authorName={name}

@@ -48,7 +48,7 @@ router.get("/feed", checkAuth, async (req, res, next) => {
       });
     }
   }
-  posts.sort(function(x, y) {
+  posts.sort(function (x, y) {
     if (x < y) {
       return 1;
     }
@@ -65,7 +65,7 @@ router.get("/userposts/:username", checkAuth, (req, res, next) => {
     .exec()
     .then((posts) => {
       console.log(posts);
-      posts.sort(function(x, y) {
+      posts.sort(function (x, y) {
         if (x < y) {
           return 1;
         }
@@ -84,6 +84,7 @@ router.get("/userposts/:username", checkAuth, (req, res, next) => {
 });
 
 router.get("/:postid", (req, res, next) => {
+  const postid = req.params.postid;
   Post.find({ id: postid })
     .exec()
     .then((post) => {
@@ -142,8 +143,11 @@ router.delete("/", checkAuth, (req, res, next) => {
     });
 });
 
-router.get("/like/:postid", checkAuth, (req,res,next) => {
-  Post.updateOne({ id: req.params.postid }, { $push: { likes: req.userData.username } })
+router.get("/like/:postid", checkAuth, (req, res, next) => {
+  Post.updateOne(
+    { id: req.params.postid },
+    { $push: { likes: req.userData.username } }
+  )
     .exec()
     .then(() => {
       res.status(201).json({
@@ -155,10 +159,13 @@ router.get("/like/:postid", checkAuth, (req,res,next) => {
         error: err,
       });
     });
-})
+});
 
-router.get("/dislike/:postid", checkAuth, (req,res,next) => {
-  Post.updateOne({ id: req.params.postid }, { $pull: { likes: req.userData.username } })
+router.get("/dislike/:postid", checkAuth, (req, res, next) => {
+  Post.updateOne(
+    { id: req.params.postid },
+    { $pull: { likes: req.userData.username } }
+  )
     .exec()
     .then(() => {
       res.status(201).json({
@@ -170,6 +177,6 @@ router.get("/dislike/:postid", checkAuth, (req,res,next) => {
         error: err,
       });
     });
-})
+});
 
 module.exports = router;

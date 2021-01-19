@@ -87,6 +87,7 @@ const Feeds = () => {
   const cards = posts.map((post) => {
     return (
       <Post
+        id={post.post._id}
         key={post.post._id}
         avatarImage={"http://localhost:8000/" + post.avatar}
         authorName={post.name}

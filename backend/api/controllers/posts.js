@@ -110,7 +110,7 @@ exports.post = (req, res, next) => {
 };
 
 exports.delete = (req, res, next) => {
-  Post.deleteOne({ id: req.body.postid, username: req.userData.username })
+  Post.deleteOne({ _id: req.params.postid, username: req.userData.username })
     .exec()
     .then((result) => {
       res.status(200).json({});

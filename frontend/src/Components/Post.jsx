@@ -8,6 +8,8 @@ import {
   CardActions,
   Avatar,
   IconButton,
+  Menu,
+  MenuItem,
   Typography,
   Divider,
 } from "@material-ui/core";
@@ -44,7 +46,35 @@ const Post = ({
 
   const [like, setLike] = useState(liked);
 
-  const { token } = useContext(AuthContext);
+  const [deleted, setDeleted] = useState(null);
+
+  const { token ,userId } = useContext(AuthContext);
+
+  const [menuAnchor, setMenuAnchor] = React.useState(null);
+  const menuOpen = Boolean(menuAnchor);
+
+  const handleMenuClick = (event) => {
+    setMenuAnchor(event.currentTarget);
+  };
+
+  const handleDelete = (event) => {
+    fetch("http://localhost:8000/posts/delete/" + id, {
+        method: "DELETE",
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      })
+        .then(() => {
+          setDeleted(true);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+  };
+  
+  const handleMenuClose = () => {
+    setMenuAnchor(null);
+  };
 
   const likeHandle = () => {
     if (like) {
@@ -85,11 +115,35 @@ const Post = ({
           </Avatar>
         }
         action={
-          <IconButton aria-label="settings">
+          username===userId &&
+          <React.Fragment>
+          <IconButton aria-label="settings"
+          aria-controls="more-menu"
+          aria-haspopup="true"
+          onClick={handleMenuClick}>
             <MoreVertIcon />
+
           </IconButton>
+          <Menu
+            id="more-menu"
+            anchorEl={menuAnchor}
+            keepMounted
+            open={menuOpen}
+            onClose={handleMenuClose}
+            PaperProps={{
+              style: {
+                // maxHeight: ITEM_HEIGHT * 2.5,
+                width: '20ch',
+              },
+            }}
+          >
+            <MenuItem key="delete" selected={false} onClick={handleDelete}>
+              delete
+            </MenuItem>
+          </Menu>
+          </React.Fragment>
         }
-        title={authorName}
+        title={deleted?"deleted":authorName}
         subheader={postDate}
       />
       <Divider />

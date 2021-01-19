@@ -36,7 +36,7 @@ router.get("/userposts/:username", checkAuth, postsController.get_profile_posts)
 
 router.post("/", checkAuth, upload.single("postmedia"), postsController.post);
 
-router.delete("/", checkAuth, postsController.delete);
+router.delete("/delete/:postid", checkAuth, postsController.delete);
 
 router.get("/like/:postid", checkAuth, postsController.like);
 

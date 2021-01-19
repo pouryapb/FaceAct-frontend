@@ -13,7 +13,7 @@ import {
 } from "@material-ui/core";
 import {
   Favorite as FavoriteIcon,
-  Share as ShareIcon,
+  //Share as ShareIcon,
   MoreVert as MoreVertIcon,
 } from "@material-ui/icons";
 import { red } from "@material-ui/core/colors";

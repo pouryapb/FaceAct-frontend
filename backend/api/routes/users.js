@@ -292,11 +292,11 @@ router.post("/unfriend/:username", checkAuth, (req, res, next) => {
   const sender = req.userData.username;
   User.updateOne(
     { username:reciver},
-    { $pull: { followings : sender}}
+    { $pull: { followers: sender}}
   ).exec();
   User.updateOne(
     { username: sender },
-    { $pull: { followers: reciver }}
+    { $pull: { followings: reciver }}
   )
     .exec()
     .then((user) => {

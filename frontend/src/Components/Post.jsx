@@ -102,9 +102,9 @@ const Post = ({
         <IconButton onClick={likeHandle} aria-label="Like">
           <FavoriteIcon style={{ color: like && red[600] }} />
         </IconButton>
-        <IconButton aria-label="share">
+        {/* <IconButton aria-label="share">
           <ShareIcon />
-        </IconButton>
+        </IconButton> */}
       </CardActions>
     </Card>
   );

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   Avatar,
   Button,
@@ -17,6 +17,8 @@ import {
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import { Link as RouterLink } from "react-router-dom";
 import { Alert } from "@material-ui/lab";
+
+import { AuthContext } from "../Context/auth-context";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -52,6 +54,8 @@ const Copyright = () => {
 
 const SignUp = () => {
   const classes = useStyles();
+
+  const { ip } = useContext(AuthContext);
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -89,7 +93,7 @@ const SignUp = () => {
       password: password,
     };
 
-    fetch("http://localhost:8000/signup", {
+    fetch(ip + "/signup", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

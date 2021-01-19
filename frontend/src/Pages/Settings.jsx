@@ -36,10 +36,10 @@ const Settings = () => {
   const [email, setEmail] = useState("");
   const [file, setFile] = useState(null);
 
-  const { token, userId, logout } = useContext(AuthContext);
+  const { token, userId, logout, ip } = useContext(AuthContext);
 
   const firstLoad = () => {
-    fetch("http://localhost:8000/uinfo/" + userId, {
+    fetch(ip + "/uinfo/" + userId, {
       method: "GET",
       headers: {
         Authorization: "Bearer " + token,
@@ -52,7 +52,7 @@ const Settings = () => {
         return res.json();
       })
       .then((resBody) => {
-        setAvatar("http://localhost:8000/" + resBody.avatar);
+        setAvatar(ip + "/" + resBody.avatar);
         setFirstName(resBody.firstName);
         setLastName(resBody.lastName);
         setEmail(resBody.email);
@@ -87,7 +87,7 @@ const Settings = () => {
       { propName: "email", value: email },
     ];
 
-    fetch("http://localhost:8000/uinfo/" + userId, {
+    fetch(ip + "/uinfo/" + userId, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -107,7 +107,7 @@ const Settings = () => {
     const formData = new FormData();
     formData.append("avatarImg", file);
 
-    fetch("http://localhost:8000/avatarup/" + userId, {
+    fetch(ip + "/avatarup/" + userId, {
       method: "PATCH",
       headers: {
         Authorization: "Bearer " + token,

@@ -62,7 +62,7 @@ const SignIn = () => {
   const [severity, setSeverity] = useState("");
   const [alertMsg, setAlertMsg] = useState("");
 
-  const { login } = useContext(AuthContext);
+  const { login, ip } = useContext(AuthContext);
 
   const submitHandler = (event) => {
     event.preventDefault();
@@ -78,7 +78,7 @@ const SignIn = () => {
       password: password,
     };
 
-    fetch("http://localhost:8000/login", {
+    fetch(ip + "/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

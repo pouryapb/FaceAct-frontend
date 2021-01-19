@@ -48,7 +48,7 @@ const Post = ({
 
   const [deleted, setDeleted] = useState(null);
 
-  const { token ,userId } = useContext(AuthContext);
+  const { token, userId, ip } = useContext(AuthContext);
 
   const [menuAnchor, setMenuAnchor] = React.useState(null);
   const menuOpen = Boolean(menuAnchor);
@@ -58,27 +58,27 @@ const Post = ({
   };
 
   const handleDelete = (event) => {
-    fetch("http://localhost:8000/posts/delete/" + id, {
-        method: "DELETE",
-        headers: {
-          Authorization: "Bearer " + token,
-        },
+    fetch(ip + "/posts/delete/" + id, {
+      method: "DELETE",
+      headers: {
+        Authorization: "Bearer " + token,
+      },
+    })
+      .then(() => {
+        setDeleted(true);
       })
-        .then(() => {
-          setDeleted(true);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      .catch((err) => {
+        console.log(err);
+      });
   };
-  
+
   const handleMenuClose = () => {
     setMenuAnchor(null);
   };
 
   const likeHandle = () => {
     if (like) {
-      fetch("http://localhost:8000/posts/dislike/" + id, {
+      fetch(ip + "/posts/dislike/" + id, {
         method: "GET",
         headers: {
           Authorization: "Bearer " + token,
@@ -91,7 +91,7 @@ const Post = ({
           console.log(err);
         });
     } else {
-      fetch("http://localhost:8000/posts/like/" + id, {
+      fetch(ip + "/posts/like/" + id, {
         method: "GET",
         headers: {
           Authorization: "Bearer " + token,
@@ -115,35 +115,37 @@ const Post = ({
           </Avatar>
         }
         action={
-          username===userId &&
-          <React.Fragment>
-          <IconButton aria-label="settings"
-          aria-controls="more-menu"
-          aria-haspopup="true"
-          onClick={handleMenuClick}>
-            <MoreVertIcon />
-
-          </IconButton>
-          <Menu
-            id="more-menu"
-            anchorEl={menuAnchor}
-            keepMounted
-            open={menuOpen}
-            onClose={handleMenuClose}
-            PaperProps={{
-              style: {
-                // maxHeight: ITEM_HEIGHT * 2.5,
-                width: '20ch',
-              },
-            }}
-          >
-            <MenuItem key="delete" selected={false} onClick={handleDelete}>
-              delete
-            </MenuItem>
-          </Menu>
-          </React.Fragment>
+          username === userId && (
+            <React.Fragment>
+              <IconButton
+                aria-label="settings"
+                aria-controls="more-menu"
+                aria-haspopup="true"
+                onClick={handleMenuClick}
+              >
+                <MoreVertIcon />
+              </IconButton>
+              <Menu
+                id="more-menu"
+                anchorEl={menuAnchor}
+                keepMounted
+                open={menuOpen}
+                onClose={handleMenuClose}
+                PaperProps={{
+                  style: {
+                    // maxHeight: ITEM_HEIGHT * 2.5,
+                    width: "20ch",
+                  },
+                }}
+              >
+                <MenuItem key="delete" selected={false} onClick={handleDelete}>
+                  delete
+                </MenuItem>
+              </Menu>
+            </React.Fragment>
+          )
         }
-        title={deleted?"deleted":authorName}
+        title={deleted ? "deleted" : authorName}
         subheader={postDate}
       />
       <Divider />

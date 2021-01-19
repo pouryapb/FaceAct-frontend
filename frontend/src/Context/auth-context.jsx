@@ -8,6 +8,7 @@ const AuthProvider = ({ children }) => {
   const [requests, setRequests] = useState([]);
   const [followings, setFollowings] = useState([]);
   const [followers, setFollowers] = useState([]);
+  const [ip] = useState("http://localhost:8000");
 
   const localToken = window.localStorage.getItem("token");
   const localId = window.localStorage.getItem("userId");
@@ -54,6 +55,7 @@ const AuthProvider = ({ children }) => {
         requests,
         followings,
         followers,
+        ip,
         login,
         logout,
         setRequests,

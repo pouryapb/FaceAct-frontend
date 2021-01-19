@@ -31,7 +31,7 @@ const useStyles = makeStyles(() => ({
 
 const Compose = () => {
   const classes = useStyles();
-  const { token, userId } = useContext(AuthContext);
+  const { token, userId, ip } = useContext(AuthContext);
   const [caption, setCaption] = useState("");
   const [activeSend, setActiveSend] = useState(false);
   const [file, setFile] = useState(null);
@@ -67,7 +67,7 @@ const Compose = () => {
     formData.append("text", caption);
     formData.append("username", userId);
 
-    fetch("http://localhost:8000/posts", {
+    fetch(ip + "/posts", {
       method: "POST",
       headers: {
         Authorization: "Bearer " + token,

@@ -34,10 +34,10 @@ const Items = ({ value, link, image }) => {
 };
 
 const RequestItems = ({ name }) => {
-  const { token, requests, setRequests } = useContext(AuthContext);
+  const { token, ip, requests, setRequests } = useContext(AuthContext);
 
   const acceptHandle = () => {
-    fetch("http://localhost:8000/reqac/" + name, {
+    fetch(ip + "/reqac/" + name, {
       method: "POST",
       headers: {
         Authorization: "Bearer " + token,
@@ -62,7 +62,7 @@ const RequestItems = ({ name }) => {
   };
 
   const denyHandle = () => {
-    fetch("http://localhost:8000/reqden/" + name, {
+    fetch(ip + "/reqden/" + name, {
       method: "POST",
       headers: {
         Authorization: "Bearer " + token,
@@ -100,7 +100,7 @@ const Search = () => {
   const [list, setList] = useState([]);
   const [reqs, setReqs] = useState([]);
 
-  const { requests } = useContext(AuthContext);
+  const { requests, ip } = useContext(AuthContext);
 
   if (requests.length !== reqs.length) {
     setReqs(
@@ -115,7 +115,7 @@ const Search = () => {
     setSearchValue(input);
 
     if (input !== "") {
-      fetch("http://localhost:8000/search/" + input, {
+      fetch(ip + "/search/" + input, {
         method: "GET",
       })
         .then((res) => {

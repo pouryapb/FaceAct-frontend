@@ -41,12 +41,12 @@ import { AuthContext } from "../Context/auth-context";
 // ];
 
 const Feeds = () => {
-  const { token, userId } = useContext(AuthContext);
+  const { token, userId, ip } = useContext(AuthContext);
 
   const [posts, setPosts] = useState([]);
 
   if (posts.length === 0) {
-    fetch("http://localhost:8000/posts/feed", {
+    fetch(ip + "/posts/feed", {
       method: "GET",
       headers: {
         Authorization: "Bearer " + token,
@@ -90,10 +90,10 @@ const Feeds = () => {
         id={post.post._id}
         key={post.post._id}
         username={post.post.username}
-        avatarImage={"http://localhost:8000/" + post.avatar}
+        avatarImage={ip + "/" + post.avatar}
         authorName={post.name}
         postDate={post.post.date}
-        media={"http://localhost:8000/" + post.post.media}
+        media={ip + "/" + post.post.media}
         mediaType={
           post.post.mediatype === "image" ? "img" : post.post.mediatype
         }

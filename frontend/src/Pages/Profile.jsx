@@ -40,6 +40,7 @@ const Profile = ({ match }) => {
   const {
     token,
     userId,
+    ip,
     setRequests,
     setFollowings,
     setFollowers,
@@ -53,7 +54,7 @@ const Profile = ({ match }) => {
   const [followingState, setFollowingState] = useState("Follow");
 
   const updateUser = () => {
-    fetch("http://localhost:8000/uinfo/" + userId, {
+    fetch(ip + "/uinfo/" + userId, {
       method: "GET",
       headers: {
         Authorization: "Bearer " + token,
@@ -82,7 +83,7 @@ const Profile = ({ match }) => {
 
     if (match) {
       const id = match.params.username;
-      fetch("http://localhost:8000/" + id, {
+      fetch(ip + "/" + id, {
         method: "GET",
         headers: {
           Authorization: "Bearer " + token,
@@ -118,16 +119,12 @@ const Profile = ({ match }) => {
       updateUser();
     }
 
-    fetch(
-      "http://localhost:8000/posts/userposts/" +
-        (match ? match.params.username : userId),
-      {
-        method: "GET",
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-      }
-    )
+    fetch(ip + "/posts/userposts/" + (match ? match.params.username : userId), {
+      method: "GET",
+      headers: {
+        Authorization: "Bearer " + token,
+      },
+    })
       .then((res) => {
         if (!(res.status === 200 || res.status === 201 || res.status === 304)) {
           throw new Error("failed!");
@@ -141,16 +138,12 @@ const Profile = ({ match }) => {
         console.log(err);
       });
 
-    fetch(
-      "http://localhost:8000/" +
-        (match ? match.params.username : "uinfo/" + userId),
-      {
-        method: "GET",
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-      }
-    )
+    fetch(ip + "/" + (match ? match.params.username : "uinfo/" + userId), {
+      method: "GET",
+      headers: {
+        Authorization: "Bearer " + token,
+      },
+    })
       .then((res) => {
         if (!(res.status === 200 || res.status === 201 || res.status === 304)) {
           throw new Error("failed!");
@@ -158,9 +151,7 @@ const Profile = ({ match }) => {
         return res.json();
       })
       .then((resBody) => {
-        setAvatar(
-          resBody.avatar ? "http://localhost:8000/" + resBody.avatar : null
-        );
+        setAvatar(resBody.avatar ? ip + "/" + resBody.avatar : null);
         setName(resBody.firstName + " " + resBody.lastName);
         setFollower(resBody.followers);
         setFollowing(resBody.followings);
@@ -176,7 +167,7 @@ const Profile = ({ match }) => {
 
   const req = () => {
     const id = match.params.username;
-    fetch("http://localhost:8000/req/" + id, {
+    fetch(ip + "/req/" + id, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -195,7 +186,7 @@ const Profile = ({ match }) => {
 
   const unfriend = () => {
     const id = match.params.username;
-    fetch("http://localhost:8000/unfriend/" + id, {
+    fetch(ip + "/unfriend/" + id, {
       method: "POST",
       headers: {
         Authorization: "Bearer " + token,
@@ -235,7 +226,7 @@ const Profile = ({ match }) => {
         avatarImage={avatar}
         authorName={name}
         postDate={post.date}
-        media={"http://localhost:8000/" + post.media}
+        media={ip + "/" + post.media}
         mediaType={post.mediatype === "image" ? "img" : post.mediatype}
         caption={post.text}
         liked={post.likes.includes(userId) ? true : false}

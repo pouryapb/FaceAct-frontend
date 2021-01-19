@@ -145,7 +145,7 @@ router.delete("/", checkAuth, (req, res, next) => {
 
 router.get("/like/:postid", checkAuth, (req, res, next) => {
   Post.updateOne(
-    { id: req.params.postid },
+    { _id: req.params.postid },
     { $push: { likes: req.userData.username } }
   )
     .exec()
@@ -163,7 +163,7 @@ router.get("/like/:postid", checkAuth, (req, res, next) => {
 
 router.get("/dislike/:postid", checkAuth, (req, res, next) => {
   Post.updateOne(
-    { id: req.params.postid },
+    { _id: req.params.postid },
     { $pull: { likes: req.userData.username } }
   )
     .exec()

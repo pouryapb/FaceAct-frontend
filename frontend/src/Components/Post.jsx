@@ -131,7 +131,7 @@ const Post = ({
                 id="more-menu"
                 anchorEl={menuAnchor}
                 keepMounted
-                open={menuAnchor}
+                open={Boolean(menuAnchor)}
                 onClose={handleMenuClose}
                 PaperProps={{
                   style: {

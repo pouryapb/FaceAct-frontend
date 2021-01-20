@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { Container } from "@material-ui/core";
+import { Container, Box, Typography } from "@material-ui/core";
 
 import Post from "../Components/Post";
 import Compose from "../Components/Compose";
@@ -88,26 +88,35 @@ const Feeds = () => {
     setPosts([]);
   };
 
-  const cards = posts.map((post) => {
-    return (
-      <Post
-        id={post.post._id}
-        key={post.post._id}
-        username={post.post.username}
-        avatarImage={ip + "/" + post.avatar}
-        authorName={post.name}
-        postDate={post.post.date}
-        media={ip + "/" + post.post.media}
-        mediaType={
-          post.post.mediatype === "image" ? "img" : post.post.mediatype
-        }
-        caption={post.post.text}
-        liked={post.post.likes.includes(userId) ? true : false}
-        likeCount={post.post.likes.length}
-        updater={updater}
-      />
+  const cards =
+    posts.length !== 0 ? (
+      posts.map((post) => {
+        return (
+          <Post
+            id={post.post._id}
+            key={post.post._id}
+            username={post.post.username}
+            avatarImage={ip + "/" + post.avatar}
+            authorName={post.name}
+            postDate={post.post.date}
+            media={ip + "/" + post.post.media}
+            mediaType={
+              post.post.mediatype === "image" ? "img" : post.post.mediatype
+            }
+            caption={post.post.text}
+            liked={post.post.likes.includes(userId) ? true : false}
+            likeCount={post.post.likes.length}
+            updater={updater}
+          />
+        );
+      })
+    ) : (
+      <Box marginTop="2rem">
+        <Typography align="center" color="textSecondary" variant="h4">
+          No posts yet!
+        </Typography>
+      </Box>
     );
-  });
 
   return (
     <Container maxWidth="sm">

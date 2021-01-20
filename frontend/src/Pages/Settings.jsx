@@ -9,7 +9,9 @@ import {
   CardHeader,
   TextField,
   Button,
+  Snackbar,
 } from "@material-ui/core";
+import { Alert } from "@material-ui/lab";
 
 import { AuthContext } from "../Context/auth-context";
 
@@ -35,6 +37,9 @@ const Settings = () => {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [file, setFile] = useState(null);
+  const [snackOpen, setOpen] = useState(false);
+  const [severity, setSeverity] = useState("");
+  const [alertMsg, setAlertMsg] = useState("");
 
   const { token, userId, logout, ip } = useContext(AuthContext);
 
@@ -100,8 +105,16 @@ const Settings = () => {
           throw new Error("failed!");
         }
       })
+      .then(() => {
+        setSeverity("success");
+        setAlertMsg("Updates Saved!");
+        setOpen(true);
+      })
       .catch((err) => {
         console.log(err);
+        setSeverity("error");
+        setAlertMsg("Update failed!");
+        setOpen(true);
       });
 
     const formData = new FormData();
@@ -124,11 +137,30 @@ const Settings = () => {
       });
   };
 
+  const snackClose = () => {
+    setOpen(false);
+  };
+
   return (
     <Container
       maxWidth="sm"
       style={{ paddingBottom: "0.1rem", marginBottom: "1.5rem" }}
     >
+      <Snackbar
+        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+        open={snackOpen}
+        autoHideDuration={3000}
+        onClose={snackClose}
+      >
+        <Alert
+          elevation={6}
+          variant="filled"
+          onClose={snackClose}
+          severity={severity}
+        >
+          {alertMsg}
+        </Alert>
+      </Snackbar>
       <Card elevation={3}>
         <CardHeader />
         <form id="av-up" noValidate autoComplete="off">

@@ -100,15 +100,30 @@ const Search = () => {
   const [list, setList] = useState([]);
   const [reqs, setReqs] = useState([]);
 
-  const { requests, ip } = useContext(AuthContext);
+  const { userId, ip } = useContext(AuthContext);
 
-  if (requests.length !== reqs.length) {
-    setReqs(
-      requests.map((user, index) => {
-        return <RequestItems key={index} name={user} />;
+  setTimeout(() => {
+    fetch(ip + "/" + userId, {
+      method: "GET",
+    })
+      .then((res) => {
+        if (!(res.status === 200 || res.status === 201 || res.status === 304)) {
+          throw new Error("failed!");
+        }
+        return res.json();
       })
-    );
-  }
+      .then((resBody) => {
+        const requests = resBody.requests;
+        setReqs(
+          requests.map((user, index) => {
+            return <RequestItems key={index} name={user} />;
+          })
+        );
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, 2000);
 
   const handleSearch = (event) => {
     const input = event.target.value;

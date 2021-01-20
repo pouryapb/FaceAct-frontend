@@ -48,8 +48,8 @@ export default function IconLabelTabs() {
           value={value}
           onChange={handleChange}
           variant="fullWidth"
-          indicatorColor="primary"
-          textColor="primary"
+          indicatorColor="secondary"
+          textColor="secondary"
           aria-label="icon label tabs example"
         >
           <Tab className={classes.tab} icon={<HomeIcon />} label="Home" />

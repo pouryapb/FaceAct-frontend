@@ -108,6 +108,7 @@ const Compose = ({ updater }) => {
         <TextField
           className={classes.textfield}
           id="post-text"
+          color="secondary"
           placeholder="What's happening?"
           multiline
           onChange={handleCaption}

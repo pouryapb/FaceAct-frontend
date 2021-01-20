@@ -235,7 +235,7 @@ const Settings = () => {
             alignItems="center"
             marginBottom="1rem"
           >
-            <Button color="primary" variant="outlined" onClick={updateInfo}>
+            <Button color="secondary" variant="outlined" onClick={updateInfo}>
               save profile
             </Button>
             <Button

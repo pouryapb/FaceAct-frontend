@@ -45,6 +45,7 @@ const Profile = ({ match }) => {
   const [avatar, setAvatar] = useState(null);
   const [name, setName] = useState("");
   const [posts, setPosts] = useState([]);
+  const [reqs, setReqs] = useState([]);
   const [follower, setFollower] = useState([]);
   const [following, setFollowing] = useState([]);
   const [followingState, setFollowingState] = useState("Follow");
@@ -76,10 +77,19 @@ const Profile = ({ match }) => {
       })
       .then((resBody) => {
         const followers = resBody.followers;
+        setReqs(resBody.requests);
         setAvatar(resBody.avatar ? ip + "/" + resBody.avatar : null);
         setName(resBody.firstName + " " + resBody.lastName);
         setFollower(followers);
         setFollowing(resBody.followings);
+
+        if (!reqs.includes(userId) && !followers.includes(userId)) {
+          setFollowingState("Follow");
+        } else if (!reqs.includes(userId) && followers.includes(userId)) {
+          setFollowingState("Unfollow");
+        } else if (reqs.includes(userId)) {
+          setFollowingState("Request sent");
+        }
       })
       .catch((err) => {
         console.log(err);
@@ -105,34 +115,34 @@ const Profile = ({ match }) => {
       });
   };
 
-  setTimeout(() => {
-    fetch(ip + "/" + (match ? match.params.username : userId), {
-      method: "GET",
-    })
-      .then((res) => {
-        if (!(res.status === 200 || res.status === 201 || res.status === 304)) {
-          throw new Error("failed!");
-        }
-        return res.json();
-      })
-      .then((resBody) => {
-        const reqs = resBody.requests;
-        const followers = resBody.followers;
-        setFollower(followers);
-        setFollowing(resBody.followings);
+  // setTimeout(() => {
+  //   fetch(ip + "/" + (match ? match.params.username : userId), {
+  //     method: "GET",
+  //   })
+  //     .then((res) => {
+  //       if (!(res.status === 200 || res.status === 201 || res.status === 304)) {
+  //         throw new Error("failed!");
+  //       }
+  //       return res.json();
+  //     })
+  //     .then((resBody) => {
+  //       const reqs = resBody.requests;
+  //       const followers = resBody.followers;
+  //       setFollower(followers);
+  //       setFollowing(resBody.followings);
 
-        if (!reqs.includes(userId) && !followers.includes(userId)) {
-          setFollowingState("Follow");
-        } else if (!reqs.includes(userId) && followers.includes(userId)) {
-          setFollowingState("Unfollow");
-        } else if (reqs.includes(userId)) {
-          setFollowingState("Request sent");
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, 2000);
+  //       if (!reqs.includes(userId) && !followers.includes(userId)) {
+  //         setFollowingState("Follow");
+  //       } else if (!reqs.includes(userId) && followers.includes(userId)) {
+  //         setFollowingState("Unfollow");
+  //       } else if (reqs.includes(userId)) {
+  //         setFollowingState("Request sent");
+  //       }
+  //     })
+  //     .catch((err) => {
+  //       console.log(err);
+  //     });
+  // }, 2000);
 
   if (name === "") {
     fetchData();
@@ -170,7 +180,6 @@ const Profile = ({ match }) => {
           throw new Error("failed!");
         }
       })
-      .then()
       .catch((err) => {
         console.log(err);
       });
@@ -189,7 +198,6 @@ const Profile = ({ match }) => {
           throw new Error("failed!");
         }
       })
-      .then()
       .catch((err) => {
         console.log(err);
       });

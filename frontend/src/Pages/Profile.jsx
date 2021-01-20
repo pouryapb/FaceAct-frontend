@@ -176,6 +176,25 @@ const Profile = ({ match }) => {
       });
   };
 
+  const unreq = () => {
+    const id = match.params.username;
+    fetch(ip + "/unreq/" + id, {
+      method: "POST",
+      headers: {
+        Authorization: "Bearer " + token,
+      },
+    })
+      .then((res) => {
+        if (!(res.status === 200 || res.status === 201)) {
+          throw new Error("failed!");
+        }
+      })
+      .then()
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   const followHandle = () => {
     if (followingState === "Unfollow") {
       setFollowingState("Follow");
@@ -183,6 +202,9 @@ const Profile = ({ match }) => {
     } else if (followingState === "Follow") {
       setFollowingState("Request sent");
       req();
+    } else if (followingState === "Request sent") {
+      setFollowingState("Follow");
+      unreq();
     }
   };
 
@@ -378,7 +400,6 @@ const Profile = ({ match }) => {
               color="secondary"
               fullWidth
               variant="outlined"
-              disabled={followingState === "Request sent" ? true : false}
               onClick={followHandle}
             >
               {followingState}

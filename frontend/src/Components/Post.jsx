@@ -148,7 +148,15 @@ const Post = ({
           )
         }
         title={authorName}
-        subheader={postDate}
+        subheader={new Date(postDate).toLocaleString(undefined, {
+          weekday: "short",
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+          hour: "numeric",
+          minute: "numeric",
+          hour12: false,
+        })}
       />
       <Divider />
       {mediaType && <CardMedia component={mediaType} controls src={media} />}

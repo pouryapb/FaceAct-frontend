@@ -125,7 +125,10 @@ const Settings = () => {
   };
 
   return (
-    <Container component="main" maxWidth="sm">
+    <Container
+      maxWidth="sm"
+      style={{ paddingBottom: "0.1rem", marginBottom: "1.5rem" }}
+    >
       <Card elevation={3}>
         <CardHeader />
         <form id="av-up" noValidate autoComplete="off">

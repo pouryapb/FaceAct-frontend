@@ -38,7 +38,11 @@ export default function IconLabelTabs() {
 
   return (
     <Container maxWidth="sm">
-      <Paper elevation={0} square className={classes.root}>
+      <Paper
+        elevation={0}
+        className={classes.root}
+        style={{ paddingBottom: "0.1rem", marginBottom: "1.5rem" }}
+      >
         <Tabs
           className={classes.tabRoot}
           value={value}

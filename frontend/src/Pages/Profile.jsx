@@ -50,6 +50,7 @@ const Profile = ({ match }) => {
   const [avatar, setAvatar] = useState(null);
   const [name, setName] = useState("");
   const [posts, setPosts] = useState([]);
+  const [reqs, setReqs] = useState([]);
   const [follower, setFollower] = useState([]);
   const [following, setFollowing] = useState([]);
   const [followingState, setFollowingState] = useState("Follow");
@@ -81,10 +82,19 @@ const Profile = ({ match }) => {
       })
       .then((resBody) => {
         const followers = resBody.followers;
+        setReqs(resBody.requests);
         setAvatar(resBody.avatar ? ip + "/" + resBody.avatar : null);
         setName(resBody.firstName + " " + resBody.lastName);
         setFollower(followers);
         setFollowing(resBody.followings);
+
+        if (!reqs.includes(userId) && !followers.includes(userId)) {
+          setFollowingState("Follow");
+        } else if (!reqs.includes(userId) && followers.includes(userId)) {
+          setFollowingState("Unfollow");
+        } else if (reqs.includes(userId)) {
+          setFollowingState("Request sent");
+        }
       })
       .catch((err) => {
         console.log(err);
@@ -181,7 +191,6 @@ const Profile = ({ match }) => {
           throw new Error("failed!");
         }
       })
-      .then()
       .catch((err) => {
         console.log(err);
       });
@@ -200,7 +209,6 @@ const Profile = ({ match }) => {
           throw new Error("failed!");
         }
       })
-      .then()
       .catch((err) => {
         console.log(err);
       });

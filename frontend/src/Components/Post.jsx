@@ -149,13 +149,9 @@ const Post = ({
         }
         title={authorName}
         subheader={new Date(postDate).toLocaleString(undefined, {
-          weekday: "short",
-          year: "numeric",
-          month: "short",
-          day: "numeric",
-          hour: "numeric",
-          minute: "numeric",
-          hour12: false,
+          dateStyle: "medium",
+          timeStyle: "short",
+          hourCycle: "h23",
         })}
       />
       <Divider />

@@ -198,15 +198,27 @@ exports.patch_avatar = (req, res, next) => {
 exports.send_request = (req, res, next) => {
   const reciver = req.params.username;
   const sender = req.userData.username;
-  User.updateOne({ username: reciver }, { $push: { requests: sender } })
+  User.find({ username: reciver, requests: sender })
     .exec()
     .then((result) => {
-      res.status(201).json(result);
+      if (result.length > 0 && result[0].request) {
+        res.status(409).json({
+          message: "already requested",
+        });
+        return;
+      }
     })
-    .catch((err) => {
-      res.status(500).json({
-        error: err,
-      });
+    .then(() => {
+      User.updateOne({ username: reciver }, { $push: { requests: sender } })
+        .exec()
+        .then((result) => {
+          res.status(201).json(result);
+        })
+        .catch((err) => {
+          res.status(500).json({
+            error: err,
+          });
+        });
     });
 };
 

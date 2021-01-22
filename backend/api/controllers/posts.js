@@ -36,7 +36,7 @@ exports.get_feed = async (req, res, next) => {
   let posts = [];
   var user = await User.find({ username: req.userData.username });
   for (let i = 0; i <= user[0].followings.length; i++) {
-    const element = (i===0?req.userData.username:user[0].followings[i-1]);
+    const element = i === 0 ? req.userData.username : user[0].followings[i - 1];
     var data = await Post.find({ username: element });
     var poster = await User.find({ username: element });
     for (let j = 0; j < data.length; j++) {
@@ -89,6 +89,7 @@ exports.post = (req, res, next) => {
     text: req.body.text,
     media: req.file ? req.file.path : null,
     mediatype: req.file ? req.file.mimetype.split("/")[0] : null,
+    date: new Date(),
   });
   post
     .save()

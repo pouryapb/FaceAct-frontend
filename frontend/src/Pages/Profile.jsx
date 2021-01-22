@@ -36,6 +36,11 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "0.6rem",
   },
 }));
+var recent = 0;
+setInterval(() => {
+  // console.log("reset");
+  recent = 0;
+}, 2000);
 
 const Profile = ({ match }) => {
   const classes = useStyles();
@@ -106,32 +111,38 @@ const Profile = ({ match }) => {
   };
 
   setTimeout(() => {
-    fetch(ip + "/" + (match ? match.params.username : userId), {
-      method: "GET",
-    })
-      .then((res) => {
-        if (!(res.status === 200 || res.status === 201 || res.status === 304)) {
-          throw new Error("failed!");
-        }
-        return res.json();
+    // console.log(recent);
+    if (recent === 0) {
+      recent = 1;
+      fetch(ip + "/" + (match ? match.params.username : userId), {
+        method: "GET",
       })
-      .then((resBody) => {
-        const reqs = resBody.requests;
-        const followers = resBody.followers;
-        setFollower(followers);
-        setFollowing(resBody.followings);
+        .then((res) => {
+          if (
+            !(res.status === 200 || res.status === 201 || res.status === 304)
+          ) {
+            throw new Error("failed!");
+          }
+          return res.json();
+        })
+        .then((resBody) => {
+          const reqs = resBody.requests;
+          const followers = resBody.followers;
+          setFollower(followers);
+          setFollowing(resBody.followings);
 
-        if (!reqs.includes(userId) && !followers.includes(userId)) {
-          setFollowingState("Follow");
-        } else if (!reqs.includes(userId) && followers.includes(userId)) {
-          setFollowingState("Unfollow");
-        } else if (reqs.includes(userId)) {
-          setFollowingState("Request sent");
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+          if (!reqs.includes(userId) && !followers.includes(userId)) {
+            setFollowingState("Follow");
+          } else if (!reqs.includes(userId) && followers.includes(userId)) {
+            setFollowingState("Unfollow");
+          } else if (reqs.includes(userId)) {
+            setFollowingState("Request sent");
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   }, 2000);
 
   if (name === "") {
@@ -305,7 +316,7 @@ const Profile = ({ match }) => {
                     <MenuItem key={index} selected={false}>
                       <Link
                         href={"http://localhost:3000/" + element}
-                        component="button"
+                        // component="button"
                         color="textPrimary"
                         variant="button"
                         underline="none"
@@ -368,7 +379,7 @@ const Profile = ({ match }) => {
                     <MenuItem key={index} selected={false}>
                       <Link
                         href={"http://localhost:3000/" + element}
-                        component="button"
+                        // component="button"
                         color="textPrimary"
                         variant="button"
                         underline="none"

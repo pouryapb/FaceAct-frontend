@@ -34,7 +34,7 @@ const Items = ({ value, link, image }) => {
 };
 
 const RequestItems = ({ name }) => {
-  const { token, ip, requests, setRequests } = useContext(AuthContext);
+  const { token, ip } = useContext(AuthContext);
 
   const acceptHandle = () => {
     fetch(ip + "/reqac/" + name, {
@@ -48,13 +48,6 @@ const RequestItems = ({ name }) => {
           throw new Error("failed!");
         }
         return res.json();
-      })
-      .then(() => {
-        setRequests(
-          requests.filter((value) => {
-            return value !== name;
-          })
-        );
       })
       .catch((err) => {
         console.log(err);
@@ -73,13 +66,6 @@ const RequestItems = ({ name }) => {
           throw new Error("failed!");
         }
         return res.json();
-      })
-      .then(() => {
-        setRequests(
-          requests.filter((value) => {
-            return value !== name;
-          })
-        );
       })
       .catch((err) => {
         console.log(err);

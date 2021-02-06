@@ -1,38 +1,9 @@
-const express = require("express");
-const router = express.Router();
-const multer = require("multer");
-const checkAuth = require("../middleware/check-auth");
-const User = require("../models/user");
-const Post = require("../models/post");
-const mongoose = require("mongoose");
+import { Types } from "mongoose";
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "./uploads");
-  },
-  filename: function (req, file, cb) {
-    cb(null, new Date().toISOString().replace(/:/g, "-") + file.originalname);
-  },
-});
+import User from "../models/user";
+import Post from "../models/post";
 
-const fileFilter = (req, file, cb) => {
-  const type = file.mimetype.split("/")[0];
-  if (type === "image" || type === "video") {
-    cb(null, true);
-  } else {
-    cb(null, false);
-  }
-};
-
-const upload = multer({
-  storage: storage,
-  limits: {
-    fileSize: 1024 * 1024 * 20,
-  },
-  fileFilter: fileFilter,
-});
-
-exports.get_feed = async (req, res, next) => {
+export async function get_feed(req, res, next) {
   let posts = [];
   var user = await User.find({ username: req.userData.username });
   for (let i = 0; i <= user[0].followings.length; i++) {
@@ -58,9 +29,9 @@ exports.get_feed = async (req, res, next) => {
     return 0;
   });
   res.status(200).json(posts);
-};
+}
 
-exports.get_profile_posts = (req, res, next) => {
+export function get_profile_posts(req, res, next) {
   Post.find({ username: req.params.username })
     .exec()
     .then((posts) => {
@@ -80,11 +51,11 @@ exports.get_profile_posts = (req, res, next) => {
         error: err,
       });
     });
-};
+}
 
-exports.post = (req, res, next) => {
+export function post(req, res, next) {
   const post = new Post({
-    _id: mongoose.Types.ObjectId(),
+    _id: Types.ObjectId(),
     username: req.body.username,
     text: req.body.text,
     media: req.file ? req.file.path : null,
@@ -108,9 +79,9 @@ exports.post = (req, res, next) => {
         error: err,
       });
     });
-};
+}
 
-exports.delete = (req, res, next) => {
+export function delete_post(req, res, next) {
   Post.deleteOne({ _id: req.params.postid, username: req.userData.username })
     .exec()
     .then((result) => {
@@ -119,9 +90,9 @@ exports.delete = (req, res, next) => {
     .catch((err) => {
       console.log(err);
     });
-};
+}
 
-exports.like = (req, res, next) => {
+export function like(req, res, next) {
   Post.updateOne(
     { _id: req.params.postid },
     { $push: { likes: req.userData.username } }
@@ -137,9 +108,9 @@ exports.like = (req, res, next) => {
         error: err,
       });
     });
-};
+}
 
-exports.dislike = (req, res, next) => {
+export function dislike(req, res, next) {
   Post.updateOne(
     { _id: req.params.postid },
     { $pull: { likes: req.userData.username } }
@@ -155,4 +126,4 @@ exports.dislike = (req, res, next) => {
         error: err,
       });
     });
-};
+}

@@ -1,11 +1,24 @@
-const express = require("express");
-const router = express.Router();
-const multer = require("multer");
+import { Router } from "express";
+const router = Router();
+import multer, { diskStorage } from "multer";
 
-const checkAuth = require("../middleware/check-auth");
-const usersControlers = require("../controllers/users");
+import checkAuth from "../middleware/check-auth";
+import {
+  signup,
+  login,
+  search,
+  get_user_info_public,
+  get_user_info_private,
+  patch_user_info,
+  patch_avatar,
+  send_request,
+  accept_request,
+  unsend_request,
+  unfriend,
+  deny_request,
+} from "../controllers/users";
 
-const storage = multer.diskStorage({
+const storage = diskStorage({
   destination: function (req, file, cb) {
     cb(null, "./uploads");
   },
@@ -31,37 +44,33 @@ const upload = multer({
   fileFilter: fileFilter,
 });
 
-router.post("/signup", usersControlers.signup);
+router.post("/signup", signup);
 
-router.post("/login", usersControlers.login);
+router.post("/login", login);
 
-router.get("/search/:username", usersControlers.search);
+router.get("/search/:username", search);
 
-router.get("/:username", usersControlers.get_user_info_public);
+router.get("/:username", get_user_info_public);
 
-router.get(
-  "/uinfo/:username",
-  checkAuth,
-  usersControlers.get_user_info_private
-);
+router.get("/uinfo/:username", checkAuth, get_user_info_private);
 
-router.patch("/uinfo/:username", checkAuth, usersControlers.patch_user_info);
+router.patch("/uinfo/:username", checkAuth, patch_user_info);
 
 router.patch(
   "/avatarup/:username",
   checkAuth,
   upload.single("avatarImg"),
-  usersControlers.patch_avatar
+  patch_avatar
 );
 
-router.post("/req/:username", checkAuth, usersControlers.send_request);
+router.post("/req/:username", checkAuth, send_request);
 
-router.post("/reqac/:username", checkAuth, usersControlers.accept_request);
+router.post("/reqac/:username", checkAuth, accept_request);
 
-router.post("/unreq/:username", checkAuth, usersControlers.unsend_request);
+router.post("/unreq/:username", checkAuth, unsend_request);
 
-router.post("/unfriend/:username", checkAuth, usersControlers.unfriend);
+router.post("/unfriend/:username", checkAuth, unfriend);
 
-router.post("/reqden/:username", checkAuth, usersControlers.deny_request);
+router.post("/reqden/:username", checkAuth, deny_request);
 
-module.exports = router;
+export default router;

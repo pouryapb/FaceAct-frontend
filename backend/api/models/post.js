@@ -1,7 +1,7 @@
-const mongoose = require("mongoose");
+import { Schema, model } from "mongoose";
 
-const postSchema = mongoose.Schema({
-  _id: mongoose.Schema.Types.ObjectId,
+const postSchema = Schema({
+  _id: Schema.Types.ObjectId,
   username: { type: String, required: true },
   text: { type: String, required: true },
   media: String,
@@ -10,4 +10,4 @@ const postSchema = mongoose.Schema({
   likes: [],
 });
 
-module.exports = mongoose.model("Post", postSchema);
+export default model("Post", postSchema);

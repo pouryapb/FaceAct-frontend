@@ -1,7 +1,0 @@
-{
-  "env": {
-    "DB_NAME": "FaceAct-db",
-    "DB_PASSWORD": "S3cret",
-    "JWT_KEY": "someJwtPaSKey"
-  }
-}

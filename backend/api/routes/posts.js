@@ -1,17 +1,10 @@
-import { Router } from "express";
-const router = Router();
-import multer, { diskStorage } from "multer";
-import checkAuth from "../middleware/check-auth";
-import {
-  get_feed,
-  get_profile_posts,
-  post,
-  delete_post,
-  like,
-  dislike,
-} from "../controllers/posts";
+const express = require("express");
+const router = express.Router();
+const multer = require("multer");
+const checkAuth = require("../middleware/check-auth");
+const postsController = require("../controllers/posts");
 
-const storage = diskStorage({
+const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "./uploads");
   },
@@ -37,16 +30,16 @@ const upload = multer({
   fileFilter: fileFilter,
 });
 
-router.get("/feed", checkAuth, get_feed);
+router.get("/feed", checkAuth, postsController.get_feed);
 
-router.get("/userposts/:username", checkAuth, get_profile_posts);
+router.get("/userposts/:username", checkAuth, postsController.get_profile_posts);
 
-router.post("/", checkAuth, upload.single("postmedia"), post);
+router.post("/", checkAuth, upload.single("postmedia"), postsController.post);
 
-router.delete("/delete/:postid", checkAuth, delete_post);
+router.delete("/delete/:postid", checkAuth, postsController.delete);
 
-router.get("/like/:postid", checkAuth, like);
+router.get("/like/:postid", checkAuth, postsController.like);
 
-router.get("/dislike/:postid", checkAuth, dislike);
+router.get("/dislike/:postid", checkAuth, postsController.dislike);
 
-export default router;
+module.exports = router;

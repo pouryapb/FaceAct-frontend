@@ -1,9 +1,9 @@
-import { hash, compare } from "bcrypt";
-import { sign } from "jsonwebtoken";
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
-import User from "../models/user";
+const User = require("../models/user");
 
-export function signup(req, res, next) {
+exports.signup = (req, res, next) => {
   User.find({ username: req.body.username })
     .exec()
     .then((user) => {
@@ -12,7 +12,7 @@ export function signup(req, res, next) {
           message: "user exists",
         });
       } else {
-        hash(req.body.password, 10, (err, hash) => {
+        bcrypt.hash(req.body.password, 10, (err, hash) => {
           if (err) {
             return res.status(500).json({
               error: err,
@@ -43,9 +43,9 @@ export function signup(req, res, next) {
         });
       }
     });
-}
+};
 
-export function login(req, res, next) {
+exports.login = (req, res, next) => {
   User.find({ username: req.body.username })
     .exec()
     .then((user) => {
@@ -54,14 +54,14 @@ export function login(req, res, next) {
           message: "auth failed",
         });
       }
-      compare(req.body.password, user[0].password, (err, result) => {
+      bcrypt.compare(req.body.password, user[0].password, (err, result) => {
         if (err) {
           return res.status(401).json({
             message: "auth failed",
           });
         }
         if (result) {
-          const token = sign(
+          const token = jwt.sign(
             {
               username: user[0].username,
             },
@@ -88,9 +88,9 @@ export function login(req, res, next) {
         error: err,
       });
     });
-}
+};
 
-export function search(req, res, next) {
+exports.search = (req, res, next) => {
   const usernameRegex = new RegExp(req.params.username + ".*", "i");
   console.log(usernameRegex);
 
@@ -106,9 +106,9 @@ export function search(req, res, next) {
         error: err,
       });
     });
-}
+};
 
-export function get_user_info_public(req, res, next) {
+exports.get_user_info_public = (req, res, next) => {
   const username = req.params.username;
 
   User.find({ username: username })
@@ -130,9 +130,9 @@ export function get_user_info_public(req, res, next) {
         error: err,
       });
     });
-}
+};
 
-export function get_user_info_private(req, res, next) {
+exports.get_user_info_private = (req, res, next) => {
   const username = req.params.username;
   if (username !== req.userData.username) {
     return res.status(401).json({
@@ -151,9 +151,9 @@ export function get_user_info_private(req, res, next) {
         error: err,
       });
     });
-}
+};
 
-export function patch_user_info(req, res, next) {
+exports.patch_user_info = (req, res, next) => {
   const username = req.params.username;
   if (username !== req.userData.username) {
     return res.status(401).json({
@@ -174,9 +174,9 @@ export function patch_user_info(req, res, next) {
         error: err,
       });
     });
-}
+};
 
-export function patch_avatar(req, res, next) {
+exports.patch_avatar = (req, res, next) => {
   const username = req.params.username;
   if (username !== req.userData.username) {
     return res.status(401).json({
@@ -193,9 +193,9 @@ export function patch_avatar(req, res, next) {
         error: err,
       });
     });
-}
+};
 
-export function send_request(req, res, next) {
+exports.send_request = (req, res, next) => {
   const reciver = req.params.username;
   const sender = req.userData.username;
   User.find({ username: reciver, requests: sender })
@@ -220,9 +220,9 @@ export function send_request(req, res, next) {
           });
         });
     });
-}
+};
 
-export function accept_request(req, res, next) {
+exports.accept_request = (req, res, next) => {
   const reciver = req.params.username;
   const sender = req.userData.username;
   User.updateOne(
@@ -244,9 +244,9 @@ export function accept_request(req, res, next) {
         error: err,
       });
     });
-}
+};
 
-export function unsend_request(req, res, next) {
+exports.unsend_request = (req, res, next) => {
   const reciver = req.params.username;
   const sender = req.userData.username;
   User.updateOne({ username: reciver }, { $pull: { requests: sender } })
@@ -261,9 +261,9 @@ export function unsend_request(req, res, next) {
         error: err,
       });
     });
-}
+};
 
-export function unfriend(req, res, next) {
+exports.unfriend = (req, res, next) => {
   const reciver = req.params.username;
   const sender = req.userData.username;
   User.updateOne(
@@ -282,9 +282,9 @@ export function unfriend(req, res, next) {
         error: err,
       });
     });
-}
+};
 
-export function deny_request(req, res, next) {
+exports.deny_request = (req, res, next) => {
   const reciver = req.params.username;
   const sender = req.userData.username;
   User.updateOne({ username: sender }, { $pull: { requests: reciver } })
@@ -299,4 +299,4 @@ export function deny_request(req, res, next) {
         error: err,
       });
     });
-}
+};

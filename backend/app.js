@@ -1,12 +1,12 @@
-import express, { urlencoded, json, static } from "express";
+const express = require("express");
 const app = express();
-import morgan from "morgan";
-import { connect, Promise } from "mongoose";
+const morgan = require("morgan");
+const mongoose = require("mongoose");
 
-import usersRoute from "./api/routes/users";
-import postsRoute from "./api/routes/posts";
+const usersRoute = require("./api/routes/users");
+const postsRoute = require("./api/routes/posts");
 
-connect(
+mongoose.connect(
   "mongodb+srv://faceact-db-user:" +
     process.env.DB_PASSWORD +
     "@faceact-db.fnxua.mongodb.net/" +
@@ -18,7 +18,7 @@ connect(
     useCreateIndex: true,
   }
 );
-Promise = global.Promise;
+mongoose.Promise = global.Promise;
 
 app.use(morgan("dev"));
 
@@ -36,9 +36,9 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(urlencoded({ extended: false }));
-app.use(json());
-app.use("/uploads/", static("uploads"));
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
+app.use("/uploads/", express.static("uploads"));
 
 // Routes handling
 app.use("/", usersRoute);
@@ -60,4 +60,4 @@ app.use((error, req, res, next) => {
   });
 });
 
-export default app;
+module.exports = app;

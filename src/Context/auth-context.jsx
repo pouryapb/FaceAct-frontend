@@ -5,7 +5,7 @@ export const AuthContext = React.createContext(null);
 const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(null);
   const [userId, setUserId] = useState(null);
-  const [ip] = useState("https://murmuring-coast-29701.herokuapp.com/");
+  const [ip] = useState("https://murmuring-coast-29701.herokuapp.com");
 
   const localToken = window.localStorage.getItem("token");
   const localId = window.localStorage.getItem("userId");

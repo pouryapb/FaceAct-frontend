@@ -24,7 +24,7 @@ const App = () => {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <BrowserRouter>
+      <BrowserRouter basename="/FaceAct">
         <Switch>
           {!token && <Redirect from="/" to="/signin" exact />}
           {!token && <Redirect from="/home" to="/signin" exact />}

@@ -59,23 +59,7 @@ const Feeds = () => {
         return res.json();
       })
       .then((resBody) => {
-        if (resBody.length === 0) {
-          setPosts([
-            {
-              post: {
-                date: null,
-                likes: [],
-                _id: "0",
-                username: null,
-                text: "emty feed",
-                media: null,
-                mediatype: null,
-              },
-              name: " ",
-              avatar: null,
-            },
-          ]);
-        } else {
+        if (resBody.length !== 0) {
           setPosts(resBody);
         }
       })
@@ -111,7 +95,7 @@ const Feeds = () => {
         );
       })
     ) : (
-      <Box marginTop="2rem">
+      <Box marginBottom="2rem" marginTop="2rem">
         <Typography align="center" color="textSecondary" variant="h4">
           No posts yet!
         </Typography>

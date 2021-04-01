@@ -26,7 +26,15 @@ const Items = ({ value, link, image }) => {
   const classes = useStyles();
 
   return (
-    <Button className={classes.button} color="default" fullWidth href={link}>
+    <Button
+      onClick={(event) => {
+        event.preventDefault();
+      }}
+      className={classes.button}
+      color="default"
+      fullWidth
+      href={link}
+    >
       <Avatar src={image} className={classes.avatar} />
       {value}
     </Button>

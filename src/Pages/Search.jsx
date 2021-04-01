@@ -10,6 +10,7 @@ import {
 } from "@material-ui/core";
 
 import { AuthContext } from "../Context/auth-context";
+import { Link } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   avatar: {
@@ -27,13 +28,12 @@ const Items = ({ value, link, image }) => {
 
   return (
     <Button
-      onClick={(event) => {
-        event.preventDefault();
-      }}
+      component={Link}
       className={classes.button}
       color="default"
       fullWidth
-      href={link}
+      to={link}
+      type="submit"
     >
       <Avatar src={image} className={classes.avatar} />
       {value}
@@ -140,7 +140,7 @@ const Search = () => {
                 <Items
                   key={user._id}
                   value={user.firstName + " " + user.lastName}
-                  link={"/FaceAct/" + user.username}
+                  link={user.username}
                   image={user.avatar}
                 />
               );

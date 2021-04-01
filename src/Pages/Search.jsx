@@ -26,6 +26,8 @@ const useStyles = makeStyles((theme) => ({
 const Items = ({ value, link, image }) => {
   const classes = useStyles();
 
+  const { ip } = useContext(AuthContext);
+
   return (
     <Button
       component={Link}
@@ -35,7 +37,7 @@ const Items = ({ value, link, image }) => {
       to={link}
       type="submit"
     >
-      <Avatar src={image} className={classes.avatar} />
+      <Avatar src={ip + "/" + image} className={classes.avatar} />
       {value}
     </Button>
   );

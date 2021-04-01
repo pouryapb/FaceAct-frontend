@@ -132,7 +132,7 @@ const Search = () => {
                 <Items
                   key={user._id}
                   value={user.firstName + " " + user.lastName}
-                  link={"http://localhost:3000/" + user.username}
+                  link={user.username}
                   image={user.avatar}
                 />
               );

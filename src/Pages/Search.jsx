@@ -132,7 +132,7 @@ const Search = () => {
                 <Items
                   key={user._id}
                   value={user.firstName + " " + user.lastName}
-                  link={user.username}
+                  link={"/FaceAct/" + user.username}
                   image={user.avatar}
                 />
               );

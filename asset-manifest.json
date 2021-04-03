@@ -1,17 +1,17 @@
 {
   "files": {
-    "main.js": "/FaceAct/static/js/main.0206b64e.chunk.js",
-    "main.js.map": "/FaceAct/static/js/main.0206b64e.chunk.js.map",
+    "main.js": "/FaceAct/static/js/main.ed4e5253.chunk.js",
+    "main.js.map": "/FaceAct/static/js/main.ed4e5253.chunk.js.map",
     "runtime-main.js": "/FaceAct/static/js/runtime-main.39ed8daa.js",
     "runtime-main.js.map": "/FaceAct/static/js/runtime-main.39ed8daa.js.map",
-    "static/js/2.54797c73.chunk.js": "/FaceAct/static/js/2.54797c73.chunk.js",
-    "static/js/2.54797c73.chunk.js.map": "/FaceAct/static/js/2.54797c73.chunk.js.map",
+    "static/js/2.df5fcfef.chunk.js": "/FaceAct/static/js/2.df5fcfef.chunk.js",
+    "static/js/2.df5fcfef.chunk.js.map": "/FaceAct/static/js/2.df5fcfef.chunk.js.map",
     "index.html": "/FaceAct/index.html",
-    "static/js/2.54797c73.chunk.js.LICENSE.txt": "/FaceAct/static/js/2.54797c73.chunk.js.LICENSE.txt"
+    "static/js/2.df5fcfef.chunk.js.LICENSE.txt": "/FaceAct/static/js/2.df5fcfef.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.39ed8daa.js",
-    "static/js/2.54797c73.chunk.js",
-    "static/js/main.0206b64e.chunk.js"
+    "static/js/2.df5fcfef.chunk.js",
+    "static/js/main.ed4e5253.chunk.js"
   ]
 }

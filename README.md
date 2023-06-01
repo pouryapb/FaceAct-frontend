@@ -1,5 +1,7 @@
 # A Social Network with React
 
+### [Backend has moved to another repository](https://github.com/pouryapb/FaceAct-backend)
+
 FaceAct was a hobby project inspired by instagram and uses React + material-ui for frontend and nodejs + express for backend.
 
 to run this project after downloading the source code you should run frontend and backend seperately:
